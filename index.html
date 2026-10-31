@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NightClaw AI — MIND 1</title>
 <style>
-:root{color-scheme:dark;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#f6f5f2;color:#191919;font-family:Inter,system-ui,-apple-system,sans-serif}
-.app{width:100%;height:100vh;min-height:520px;border:0;border-radius:0;background:#f8f7f4;display:flex;flex-direction:row;overflow:hidden}
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;min-height:100dvh;background:#f6f5f2;color:#191919;font-family:Inter,system-ui,-apple-system,sans-serif}
+.app{width:100%;height:100vh;height:100dvh;min-height:520px;border:0;border-radius:0;background:#f8f7f4;display:flex;flex-direction:row;overflow:hidden}
 header{padding:17px 24px;border-bottom:1px solid #e6e4df;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fbfaf8;color:#202020}
 h1{font-size:17px;margin:0}.sub{font-size:12px;color:#898982;margin-top:3px}
 button{font:inherit;border:0;border-radius:10px;padding:10px 13px;background:#202020;color:#fff;font-weight:650;cursor:pointer}
 button:disabled{opacity:.55;cursor:wait}
 .settings{padding:10px 20px;display:flex;gap:8px;border-bottom:1px solid #e8e6e1;background:#fbfaf8}
 input,textarea{font:inherit;min-width:0;background:#fff;color:#222;border:1px solid #deddd8;border-radius:12px;padding:10px 12px}
-input{flex:1}#status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+input{flex:1}#status{min-height:22px;flex:0 0 auto;padding:4px max(24px,calc((100% - 900px)/2));font-size:11px;line-height:1.3;color:#85857f;background:#f8f7f4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}body.dark #status{background:#111214;color:#aaa}
 #messages{position:relative;isolation:isolate;flex:1;min-height:0;overflow-y:auto;padding:34px max(24px,calc((100% - 900px)/2));display:flex;flex-direction:column;gap:18px;scroll-behavior:auto;background:#f8f7f4}
 #messages::before{content:"";position:absolute;z-index:0;pointer-events:none;left:50%;top:48%;transform:translate(-50%,-50%);width:min(58vw,520px);height:min(58vw,520px);background:url("images/1.png") center/contain no-repeat;opacity:.035}
 body.dark #messages::before{opacity:.065}
@@ -32,13 +32,13 @@ textarea{flex:1;resize:none;min-height:48px;max-height:180px;border:0!important;
 .copybtn{padding:6px 10px;font-size:12px;background:#e4e4e7;color:#18181b}
 .codebody{margin:0;padding:12px;overflow:auto;max-height:520px;white-space:pre;tab-size:4;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#f4f4f5}
 .codebody code{font:inherit}
-@media(max-width:560px){.app{height:100vh}.msg{max-width:97%}.codebody{font-size:12px}.empty-state{padding:20px 8px 35px}.hero-logo{width:88px;height:88px}form{padding:10px 14px 16px}.composer-shell{padding-left:15px}}
+@media(max-width:560px){.app{height:100vh;height:100dvh}.msg{max-width:97%}.codebody{font-size:12px}.empty-state{padding:20px 8px 35px}.hero-logo{width:88px;height:88px}form{padding:10px 14px 16px}.composer-shell{padding-left:15px}}
 
 .sidebar{width:270px;flex:0 0 270px;background:#fff;border-right:1px solid #e5e3de;padding:22px 16px;display:flex;flex-direction:column;color:#252525}
 .brand{display:flex;align-items:center;gap:11px;padding:2px 10px 28px;font-size:18px}.brandmark{width:46px;height:46px;flex:0 0 46px;border-radius:12px;object-fit:contain;background:transparent;color:inherit;display:grid;place-items:center;font-weight:800;overflow:hidden}.brandmark img{width:100%;height:100%;object-fit:contain;display:block}.brandmark img.logo-failed{display:none}.brand small,.sidebar-foot small{display:block;color:#92918b;font-size:11px;margin-top:3px}
 .side-new{background:#f0efec;color:#202020;text-align:left;margin-bottom:16px;padding:13px 15px}
-.sidebar nav{display:flex;flex-direction:column;gap:7px}.sidebar nav a{text-decoration:none;color:#5e5c58;padding:11px 12px;border-radius:10px;font-size:14px}.sidebar nav a.active{background:#f3f1ed;color:#161616;font-weight:650}.nav-caption{font-size:10px;letter-spacing:.12em;color:#99978f;margin:23px 12px 5px}#recentEmpty{font-size:12px;color:#99978f;padding:10px 12px}.sidebar-foot{margin-top:auto;border-top:1px solid #e9e7e2;padding:16px 7px 3px;display:flex;gap:10px;align-items:center;font-size:13px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#bbb29d;color:white;font-weight:700}
-.workspace{min-width:0;flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.sidebar nav{display:flex;flex-direction:column;gap:7px}.sidebar nav a{text-decoration:none;color:#5e5c58;padding:11px 12px;border-radius:10px;font-size:14px}.sidebar nav a.coming-soon{opacity:.58;cursor:default;display:flex;align-items:center;gap:6px;flex-wrap:wrap}.sidebar nav a.coming-soon small{font-size:9px;color:#99978f;margin-left:auto;letter-spacing:.02em}.origin-help{margin:12px 0 0!important;font-size:11px!important;overflow-wrap:anywhere}.origin-help code{display:inline-block;margin-top:4px;padding:2px 5px;border-radius:5px;background:#eee}.sidebar nav a.active{background:#f3f1ed;color:#161616;font-weight:650}.nav-caption{font-size:10px;letter-spacing:.12em;color:#99978f;margin:23px 12px 5px}#recentEmpty{font-size:12px;color:#99978f;padding:10px 12px}.sidebar-foot{margin-top:auto;border-top:1px solid #e9e7e2;padding:16px 7px 3px;display:flex;gap:10px;align-items:center;font-size:13px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#bbb29d;color:white;font-weight:700}
+.workspace{min-width:0;flex:1;display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
 .topbar{height:54px;flex:0 0 54px;display:flex;align-items:center;gap:12px;padding:0 20px;border-bottom:1px solid #e6e4df;background:#fbfaf8}
 .topbar button{padding:7px 10px;border-radius:9px;background:transparent;color:inherit;font-size:18px}
 .topbar button:hover{background:#efeee9}
@@ -51,7 +51,7 @@ textarea{flex:1;resize:none;min-height:48px;max-height:180px;border:0!important;
 .settings-card h2{margin:0 0 8px;font-size:19px}.settings-card p{color:#888;font-size:13px}
 .settings-card .settings-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
 .settings-card input{width:100%;margin-top:8px}
-body.dark{background:#111214;color:#eee;--panel:#1c1d20;--text:#f3f3f3;--border:#38393e}
+body.dark{color-scheme:dark;background:#111214;color:#eee;--panel:#1c1d20;--text:#f3f3f3;--border:#38393e}
 body.dark .app,body.dark .workspace,body.dark #messages{background:#111214;color:#eee}
 body.dark header,body.dark .topbar,body.dark .settings{background:#191a1d;color:#eee;border-color:#33343a}
 body.dark .sidebar{background:#191a1d;color:#eee;border-color:#33343a}
@@ -69,14 +69,14 @@ body.dark .topbar button:hover{background:#303136}
 </head>
 <body>
 <main class="app">
-<aside class="sidebar"><div class="brand"><span class="brandmark"><img src="images/1.png" alt="Logo NightClaw" onerror="this.classList.add('logo-failed');this.parentElement.textContent='N'"></span><div><b>NightClaw</b><small>AI · MIND 1</small></div></div><button id="newChatSide" class="side-new" type="button">＋ Nuevo chat</button><nav><a href="#" class="active">⌕ &nbsp; Buscar chats</a><a href="#">▤ &nbsp; Biblioteca</a><a href="#">◇ &nbsp; Explorar modelos</a><a href="#">⌘ &nbsp; Herramientas</a><div class="nav-caption">TU ESPACIO</div><a href="#">▦ &nbsp; Proyectos</a><div class="nav-caption">RECIENTES</div><div id="recentEmpty">Tus conversaciones aparecerán aquí.</div></nav><div class="sidebar-foot"><span class="avatar">N</span><div><b>Invitado</b><small>Vista previa</small></div></div></aside>
+<aside class="sidebar"><div class="brand"><span class="brandmark"><img src="images/1.png" alt="Logo NightClaw" onerror="this.classList.add('logo-failed');this.parentElement.textContent='N'"></span><div><b>NightClaw</b><small>AI · MIND 1</small></div></div><button id="newChatSide" class="side-new" type="button">＋ Nuevo chat</button><nav><a href="#" class="coming-soon" aria-disabled="true">⌕ &nbsp; Buscar chats <small>Próximamente</small></a><a href="#" class="coming-soon" aria-disabled="true">▤ &nbsp; Biblioteca <small>Próximamente</small></a><a href="#" class="coming-soon" aria-disabled="true">◇ &nbsp; Explorar modelos <small>Próximamente</small></a><a href="#" class="coming-soon" aria-disabled="true">⌘ &nbsp; Herramientas <small>Próximamente</small></a><div class="nav-caption">TU ESPACIO</div><a href="#" class="coming-soon" aria-disabled="true">▦ &nbsp; Proyectos <small>Próximamente</small></a><div class="nav-caption">RECIENTES · PRÓXIMAMENTE</div><div id="recentEmpty">El historial de chats estará disponible próximamente.</div></nav><div class="sidebar-foot"><span class="avatar">N</span><div><b>Invitado</b><small>Vista previa</small></div></div></aside>
 <section class="workspace">
 <div class="topbar"><button id="toggleSidebar" type="button" aria-label="Abrir o cerrar menú" title="Menú">☰</button><select id="modelSelect" class="model-select" aria-label="Seleccionar modelo"><option value="qwen2.5-coder:1.5b">Qwen 2.5 Coder 1.5B</option><option value="llama3.2">Llama 3.2</option><option value="mistral">Mistral</option><option value="deepseek-coder">DeepSeek Coder</option></select><button id="modelSettings" class="model-settings" type="button" aria-label="Ajustes del modelo" title="Ajustes del modelo">⚙</button><span class="spacer"></span><button id="themeToggle" type="button" aria-label="Cambiar tema" title="Cambiar entre modo claro y oscuro">☾</button></div>
-<div id="status" aria-live="polite"></div>
 <section id="messages" aria-live="polite"><div class="empty-state" id="emptyState"><div class="hero-logo"><img src="images/1.png" alt="Logo de MIND" onerror="this.style.display='none';this.parentElement.classList.add('fallback')"><span class="fallback-letter">N</span></div><h2>Una gran inteligencia conlleva un gran alma.</h2><p>Bienvenido a MIND. ¿Qué vamos a crear hoy?</p></div></section>
+<div id="status" role="status" aria-live="polite"></div>
 <form id="chatForm"><div class="composer-shell"><textarea id="prompt" rows="1" placeholder="Pregunta a MIND" required></textarea><div class="composer-actions"><button id="stopBtn" class="stop-action" type="button" aria-label="Detener generación" title="Detener" disabled>■</button><button id="sendBtn" class="send-action" type="submit" aria-label="Enviar mensaje" title="Enviar">↑</button></div></div></form>
 </section>
-<div id="settingsPanel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="settings-card"><h2 id="settingsTitle">Ajustes de conexión</h2><p>Configura el servidor de Ollama y comprueba la conexión del modelo seleccionado.</p><label for="endpoint">URL del servidor Ollama</label><input id="endpoint" aria-label="URL del servidor" value="http://192.168.1.128:11434" placeholder="http://IP:PUERTO"><div id="settingsStatus" style="font-size:12px;margin-top:8px;color:#888">La conexión se configura aquí.</div><div class="settings-actions"><button id="closeSettings" type="button" style="background:#777">Cerrar</button><button id="saveBtn" type="button">Guardar URL</button><button id="testBtn" type="button">Probar</button></div></div></div>
+<div id="settingsPanel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="settings-card"><h2 id="settingsTitle">Ajustes de conexión</h2><p>Introduce la URL HTTPS pública de tu túnel o proxy protegido. Una IP privada o una URL HTTP no funcionará desde GitHub Pages.</p><label for="endpoint">URL HTTPS del servidor Ollama</label><input id="endpoint" aria-label="URL HTTPS del servidor" placeholder="https://tu-servidor-ollama.example"><p class="origin-help">Origen de esta web para configurar OLLAMA_ORIGINS: <code id="siteOrigin"></code></p><div id="settingsStatus" style="font-size:12px;margin-top:8px;color:#888">La conexión se configura aquí.</div><div class="settings-actions"><button id="closeSettings" type="button" style="background:#777">Cerrar</button><button id="saveBtn" type="button">Guardar URL</button><button id="testBtn" type="button">Probar</button></div></div></div>
 </main>
 <script>
 (() => {
@@ -86,13 +86,14 @@ body.dark .topbar button:hover{background:#303136}
   const input = $('#prompt'), send = $('#sendBtn'), stopBtn = $('#stopBtn'), test = $('#testBtn');
   const settingsPanel = $('#settingsPanel');
   const settingsStatus = $('#settingsStatus');
+  $('#siteOrigin').textContent = window.location.origin;
   $('#toggleSidebar').addEventListener('click', () => { const side = document.querySelector('.sidebar'); side.style.display = side.style.display === 'none' ? 'flex' : 'none'; });
   $('#themeToggle').addEventListener('click', () => { document.body.classList.toggle('dark'); $('#themeToggle').textContent = document.body.classList.contains('dark') ? '☀' : '☾'; localStorage.setItem('nightclawTheme', document.body.classList.contains('dark') ? 'dark' : 'light'); });
   if (localStorage.getItem('nightclawTheme') === 'dark') { document.body.classList.add('dark'); $('#themeToggle').textContent = '☀'; }
   $('#modelSettings').addEventListener('click', () => { settingsPanel.classList.add('open'); });
   $('#closeSettings').addEventListener('click', () => settingsPanel.classList.remove('open'));
   settingsPanel.addEventListener('click', e => { if (e.target === settingsPanel) settingsPanel.classList.remove('open'); });
-  $('#modelSelect').addEventListener('change', () => { MODEL = $('#modelSelect').value; setStatus('Modelo seleccionado: ' + MODEL + '. Comprueba que esté instalado en Ollama.'); });
+  $('#modelSelect').addEventListener('change', () => { MODEL = $('#modelSelect').value; setStatus('Modelo: ' + MODEL + '. Comprueba que está instalado en Ollama.'); });
   let MODEL = $('#modelSelect').value;
   let history = [];
   let busy = false;
@@ -100,6 +101,16 @@ body.dark .topbar button:hover{background:#303136}
   let stopRequested = false;
 
   const base = () => endpoint.value.trim().replace(/\/+$/, '');
+  const getConnectionUrl = () => {
+    const value = base();
+    if (!value) throw new Error('Abre ⚙ Ajustes e introduce la URL HTTPS pública de tu servidor Ollama.');
+    const parsed = new URL(value);
+    const localHttp = parsed.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(parsed.hostname);
+    if (parsed.protocol !== 'https:' && !localHttp) {
+      throw new Error('GitHub Pages necesita una URL HTTPS. Usa un túnel o proxy HTTPS protegido; 192.168.x.x no es accesible desde Internet.');
+    }
+    return parsed.origin + parsed.pathname.replace(/\/+$/, '');
+  };
   const setStatus = (text, state='neutral') => {
     status.textContent = text;
     status.style.color = state === 'ok' ? '#86efac' : state === 'error' ? '#fca5a5' : '#a1a1aa';
@@ -132,7 +143,7 @@ body.dark .topbar button:hover{background:#303136}
       if (!value) return;
       const node = document.createElement('div');
       node.className = 'answertext';
-      node.textContent = value.replace(/\*\*(.*?)\*\*/g, '$1').replace(/(^|\s)\*(?=\S)|(?<=\S)\*(?=\s|$)/g, '$1');
+      node.textContent = value.replace(/\*\*(.*?)\*\*/g, '$1').replace(/(^|\s)\*(?=\S)/g, '$1').replace(/(\S)\*(?=\s|$)/g, '$1');
       container.appendChild(node);
     };
     const appendCode = (language, value) => {
@@ -291,35 +302,59 @@ body.dark .topbar button:hover{background:#303136}
   const saveUrl = () => {
     const url = base();
     try {
-      const parsed = new URL(url);
-      if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error();
-      localStorage.setItem('ollamaEndpoint', url);
+      const safeUrl = getConnectionUrl();
+      localStorage.setItem('ollamaEndpoint', safeUrl);
+      endpoint.value = safeUrl;
       setStatus('URL guardada: ' + url, 'ok');
       settingsStatus.textContent = 'URL guardada correctamente.';
       settingsPanel.classList.remove('open');
-    } catch { setStatus('URL inválida. Usa http://IP:PUERTO', 'error'); }
+    } catch (error) {
+      const message = error.message || 'URL inválida.';
+      setStatus(message, 'error');
+      settingsStatus.textContent = message;
+    }
   };
   $('#saveBtn').addEventListener('click', saveUrl);
-  $('#newChatSide').addEventListener('click', () => $('#clearBtn').click());
-  $('#clearBtn').addEventListener('click', () => {
+  const emptyStateMarkup = '<div class="empty-state" id="emptyState"><div class="hero-logo"><img src="images/1.png" alt="Logo de MIND" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'fallback\')"><span class="fallback-letter">N</span></div><h2>Una gran inteligencia conlleva un gran alma.</h2><p>Bienvenido a MIND. ¿Qué vamos a crear hoy?</p></div>';
+  const newChat = () => {
     stopRequested = true;
     if (activeController) activeController.abort();
+    activeController = null;
     history = [];
-    messages.replaceChildren();
-    messages.innerHTML = '<div class="empty-state" id="emptyState"><div class="hero-logo"><img src="images/1.png" alt="Logo de MIND" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'fallback\')"><span class="fallback-letter">N</span></div><h2>Una gran inteligencia conlleva un gran alma.</h2><p>Bienvenido a MIND. ¿Qué vamos a crear hoy?</p></div>';
+    messages.innerHTML = emptyStateMarkup;
     setStatus('Historial borrado.');
+  };
+  $('#newChatSide').addEventListener('click', newChat);
+  document.querySelectorAll('.coming-soon').forEach(link => {
+    link.addEventListener('click', event => event.preventDefault());
   });
-  const DEFAULT_ENDPOINT = 'http://192.168.1.128:11434';
-  const saved = localStorage.getItem('ollamaEndpoint');
-  endpoint.value = saved || DEFAULT_ENDPOINT;
-  if (!saved) localStorage.setItem('ollamaEndpoint', DEFAULT_ENDPOINT);
+  const DEFAULT_ENDPOINT = '';
+  let savedEndpoint = localStorage.getItem('ollamaEndpoint') || '';
+  if (savedEndpoint) {
+    try {
+      const parsedSaved = new URL(savedEndpoint);
+      const savedIsAllowed = parsedSaved.protocol === 'https:' ||
+        (parsedSaved.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(parsedSaved.hostname));
+      if (!savedIsAllowed) {
+        localStorage.removeItem('ollamaEndpoint');
+        savedEndpoint = '';
+      }
+    } catch {
+      localStorage.removeItem('ollamaEndpoint');
+      savedEndpoint = '';
+    }
+  }
+  endpoint.value = savedEndpoint || DEFAULT_ENDPOINT;
+  $('#siteOrigin').textContent = window.location.origin;
+  setStatus(savedEndpoint ? 'Conexión configurada. Pulsa Probar para comprobarla.' : 'Configura una URL HTTPS en ⚙ Ajustes para conectar con Ollama.');
 
   test.addEventListener('click', async () => {
     if (busy) return;
-    setStatus('Comprobando /api/tags…');
+    setStatus('Comprobando conexión con Ollama…');
     test.disabled = true;
     try {
-      const r = await fetch(base() + '/api/tags');
+      const connectionUrl = getConnectionUrl();
+      const r = await fetch(connectionUrl + '/api/tags');
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const d = await r.json();
       const names = (d.models || []).map(x => x.name).join(', ') || 'ninguno detectado';
@@ -327,7 +362,7 @@ body.dark .topbar button:hover{background:#303136}
       settingsStatus.textContent = 'Conexión correcta. Modelos disponibles: ' + names;
     } catch (e) {
       setStatus('No conecta: ' + e.message + '. Comprueba CORS, URL y acceso al servidor.', 'error');
-      settingsStatus.textContent = 'Error: ' + e.message + '. Revisa URL, CORS y acceso al servidor.';
+      settingsStatus.textContent = e.message + ' Revisa el HTTPS, CORS y el acceso al servidor.';
     } finally { test.disabled = false; }
   });
 
@@ -336,19 +371,21 @@ body.dark .topbar button:hover{background:#303136}
     if (busy) return;
     const prompt = input.value.trim();
     if (!prompt) return;
-    let url;
-    try {
-      url = base();
-      const u = new URL(url);
-      if (!['http:', 'https:'].includes(u.protocol)) throw new Error();
-    } catch { setStatus('Introduce una URL válida.', 'error'); return; }
-
     addMessage('user', prompt);
-    history.push({role:'user', content:prompt});
     input.value = '';
     input.style.height = 'auto';
     const answerNode = addMessage('assistant', '');
+    let url;
+    try {
+      url = getConnectionUrl();
+    } catch (error) {
+      answerNode.textContent = error.message;
+      setStatus(error.message, 'error');
+      return;
+    }
+    history.push({role:'user', content:prompt});
     const started = performance.now();
+    let answer = '';
     activeController = new AbortController();
     stopRequested = false;
     setBusy(true);
@@ -386,7 +423,7 @@ body.dark .topbar button:hover{background:#303136}
       if (!response.body) throw new Error('El navegador no admite lectura de streaming.');
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let buffer = '', answer = '', firstToken = null, lastPaint = 0;
+      let buffer = '', firstToken = null, lastPaint = 0;
       while (true) {
         const {value, done} = await reader.read();
         if (done) break;
@@ -432,13 +469,19 @@ body.dark .topbar button:hover{background:#303136}
       }
       buffer += decoder.decode();
       if (buffer.trim()) {
-        const part = JSON.parse(buffer.trim());
-        if (part.error) throw new Error(part.error);
-        if (part.message?.content) answer += part.message.content;
-        if (part.done) {
-          const elapsed = (performance.now()-started)/1000;
-          const evalRate = part.eval_count && part.eval_duration ? (part.eval_count / (part.eval_duration/1e9)).toFixed(1) : null;
-          setStatus('Listo · ' + elapsed.toFixed(1) + ' s total' + (evalRate ? ' · ' + evalRate + ' tokens/s' : ''), 'ok');
+        try {
+          const part = JSON.parse(buffer.trim());
+          if (part.error) throw new Error(part.error);
+          if (part.message?.content) answer += part.message.content;
+          if (part.done) {
+            const elapsed = (performance.now()-started)/1000;
+            const evalRate = part.eval_count && part.eval_duration ? (part.eval_count / (part.eval_duration/1e9)).toFixed(1) : null;
+            setStatus('Listo · ' + elapsed.toFixed(1) + ' s total' + (evalRate ? ' · ' + evalRate + ' tokens/s' : ''), 'ok');
+          }
+        } catch (error) {
+          if (!(error instanceof SyntaxError)) throw error;
+          // La cancelación puede dejar una línea NDJSON incompleta; se conserva
+          // todo el texto recibido y se ignora únicamente este fragmento final.
         }
       }
       renderAnswer(answerNode, answer || '(El modelo no devolvió texto.)');
@@ -446,13 +489,12 @@ body.dark .topbar button:hover{background:#303136}
       if (firstToken === null) setStatus('Respuesta recibida · ' + ((performance.now()-started)/1000).toFixed(1) + ' s', 'ok');
     } catch (e) {
       if (e.name === 'AbortError') {
-        if (answerNode.textContent === '' && stopRequested) answerNode.textContent = '(Generación detenida.)';
+        renderAnswer(answerNode, answer || '(Generación detenida antes de recibir respuesta.)');
+        if (answer.trim()) history.push({role:'assistant', content:answer});
         setStatus(stopRequested ? 'Generación detenida.' : 'Generación cancelada.');
-        if (history.length && history[history.length - 1]?.role === 'user') history.pop();
       } else {
         answerNode.textContent = 'Error: ' + e.message;
-        history.pop();
-        setStatus('Error de conexión. Si /api/tags funciona, revisa CORS y /api/chat.', 'error');
+        setStatus('Error al conectar con Ollama: ' + e.message, 'error');
       }
     } finally {
       activeController = null;
