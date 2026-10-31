@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NightClaw AI — MIND 1</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#f6f5f2;color:#191919;font-family:Inter,system-ui,-apple-system,sans-serif}
+.app{width:100%;height:100vh;min-height:520px;border:0;border-radius:0;background:#f8f7f4;display:flex;flex-direction:row;overflow:hidden}
+header{padding:17px 24px;border-bottom:1px solid #e6e4df;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fbfaf8;color:#202020}
+h1{font-size:17px;margin:0}.sub{font-size:12px;color:#898982;margin-top:3px}
+button{font:inherit;border:0;border-radius:10px;padding:10px 13px;background:#202020;color:#fff;font-weight:650;cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+.settings{padding:10px 20px;display:flex;gap:8px;border-bottom:1px solid #e8e6e1;background:#fbfaf8}
+input,textarea{font:inherit;min-width:0;background:#fff;color:#222;border:1px solid #deddd8;border-radius:12px;padding:10px 12px}
+input{flex:1}#status{padding:8px 20px;font-size:12px;color:#85857f;border-bottom:1px solid #e8e6e1;background:#fbfaf8}
+#messages{flex:1;min-height:0;overflow-y:auto;padding:28px max(24px,calc((100% - 900px)/2));display:flex;flex-direction:column;gap:18px;scroll-behavior:auto;background:#f8f7f4}
+.msg{max-width:88%;padding:14px 17px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;contain:content;color:#202020}
+.user{align-self:flex-end;background:#eeece7}.assistant{align-self:flex-start;background:#fff;border:1px solid #e7e5df}
+.label{display:block;font-size:11px;color:#85857f;margin-bottom:6px;font-weight:650;letter-spacing:.04em}
+form{padding:18px max(20px,calc((100% - 900px)/2));border-top:1px solid #e8e6e1;display:flex;gap:8px;align-items:flex-end;background:#fbfaf8}
+textarea{flex:1;resize:vertical;min-height:56px;max-height:160px}
+.hint{font-size:11px;color:#85857f;padding:0 24px 12px;background:#fbfaf8;text-align:center}
+ .codebox{margin:10px 0 2px;border:1px solid #303039;border-radius:10px;overflow:hidden;background:#111218;color:#f4f4f5}
+.codehead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;background:#24252c;color:#c4c4cc;font-size:12px}
+.copybtn{padding:6px 10px;font-size:12px;background:#e4e4e7;color:#18181b}
+.codebody{margin:0;padding:12px;overflow:auto;max-height:520px;white-space:pre;tab-size:4;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#f4f4f5}
+.codebody code{font:inherit}
+@media(max-width:560px){.app{height:96vh}.settings{flex-wrap:wrap}.settings input{flex-basis:100%}.msg{max-width:97%}header{align-items:flex-start}.codebody{font-size:12px}}
+
+.sidebar{width:270px;flex:0 0 270px;background:#fff;border-right:1px solid #e5e3de;padding:22px 16px;display:flex;flex-direction:column;color:#252525}
+.brand{display:flex;align-items:center;gap:11px;padding:2px 10px 28px;font-size:18px}.brandmark{width:36px;height:36px;border-radius:11px;background:#1d1d20;color:#fff;display:grid;place-items:center;font-weight:800}.brand small,.sidebar-foot small{display:block;color:#92918b;font-size:11px;margin-top:3px}
+.side-new{background:#f0efec;color:#202020;text-align:left;margin-bottom:16px;padding:13px 15px}
+.sidebar nav{display:flex;flex-direction:column;gap:7px}.sidebar nav a{text-decoration:none;color:#5e5c58;padding:11px 12px;border-radius:10px;font-size:14px}.sidebar nav a.active{background:#f3f1ed;color:#161616;font-weight:650}.nav-caption{font-size:10px;letter-spacing:.12em;color:#99978f;margin:23px 12px 5px}#recentEmpty{font-size:12px;color:#99978f;padding:10px 12px}.sidebar-foot{margin-top:auto;border-top:1px solid #e9e7e2;padding:16px 7px 3px;display:flex;gap:10px;align-items:center;font-size:13px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#bbb29d;color:white;font-weight:700}
+.workspace{min-width:0;flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+#messages{overscroll-behavior:contain}
+@media(max-width:760px){.sidebar{width:76px;flex-basis:76px;padding:16px 8px}.brand{padding:0 8px 22px}.brand>div,.sidebar nav a{font-size:0}.brand small,.sidebar nav a{white-space:nowrap}.side-new{font-size:0;text-align:center;padding:12px 5px}.sidebar-foot>div,.nav-caption,#recentEmpty{display:none}.sidebar-foot{justify-content:center}.sidebar nav a{padding:13px 10px}.workspace header{padding:13px}.settings{flex-wrap:wrap}.settings input{flex-basis:100%}}
+</style>
+</head>
+<body>
+<main class="app">
+<aside class="sidebar"><div class="brand"><span class="brandmark">N</span><div><b>NightClaw</b><small>AI · MIND 1</small></div></div><button id="newChatSide" class="side-new" type="button">＋ Nuevo chat</button><nav><a href="#" class="active">⌕ &nbsp; Buscar chats</a><a href="#">▤ &nbsp; Biblioteca</a><a href="#">◇ &nbsp; Explorar modelos</a><a href="#">⌘ &nbsp; Herramientas</a><div class="nav-caption">TU ESPACIO</div><a href="#">▦ &nbsp; Proyectos</a><div class="nav-caption">RECIENTES</div><div id="recentEmpty">Tus conversaciones aparecerán aquí.</div></nav><div class="sidebar-foot"><span class="avatar">N</span><div><b>Invitado</b><small>Vista previa</small></div></div></aside>
+<section class="workspace">
+<header><div><h1>MIND · Ollama Ultra Rápido</h1><div class="sub">qwen2.5-coder:1.5b · streaming · código largo</div></div><button id="testBtn" type="button">Probar</button></header>
+<div class="settings"><input id="endpoint" aria-label="URL del servidor" value="http://192.168.1.128:11434" placeholder="http://192.168.1.128:11434"><button id="saveBtn" type="button">Guardar URL</button><button id="clearBtn" type="button">Nuevo chat</button></div>
+<div id="status">Introduce la URL de Ollama y pulsa Probar.</div>
+<section id="messages" aria-live="polite"><div class="msg assistant"><span class="label">MIND</span>Listo. Escribe una pregunta corta para probar la velocidad.</div></section>
+<form id="chatForm"><textarea id="prompt" rows="1" placeholder="Escribe un mensaje… (Enter para enviar)" required></textarea><button id="stopBtn" type="button" disabled>Detener</button><button id="sendBtn" type="submit">Enviar</button></form>
+<div class="hint">Streaming activado. Hasta 4096 tokens de salida; el rendimiento depende del servidor y del modelo.</div>
+</section>
+</main>
+<script>
+(() => {
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const endpoint = $('#endpoint'), status = $('#status'), messages = $('#messages');
+  const input = $('#prompt'), send = $('#sendBtn'), test = $('#testBtn'), stopBtn = $('#stopBtn');
+  const MODEL = 'qwen2.5-coder:1.5b';
+  let history = [];
+  let busy = false;
+  let activeController = null;
+  let stopRequested = false;
+
+  const base = () => endpoint.value.trim().replace(/\/+$/, '');
+  const setStatus = (text, state='neutral') => {
+    status.textContent = text;
+    status.style.color = state === 'ok' ? '#86efac' : state === 'error' ? '#fca5a5' : '#a1a1aa';
+  };
+  const isNearBottom = () => messages.scrollHeight - messages.scrollTop - messages.clientHeight < 110;
+  const addMessage = (role, text) => {
+    const node = document.createElement('div');
+    node.className = 'msg ' + role;
+    const label = document.createElement('span');
+    label.className = 'label';
+    label.textContent = role === 'user' ? 'Tú' : 'MIND';
+    const body = document.createElement('div');
+    body.textContent = text;
+    node.append(label, body);
+    messages.appendChild(node);
+    messages.scrollTop = messages.scrollHeight;
+    return body;
+  };
+  // Renderiza bloques Markdown de código y deja el texto explicativo fuera.
+  // También reconoce respuestas donde el modelo anida accidentalmente ```arduino
+  // dentro de un bloque ```markdown, como ocurre a veces con modelos pequeños.
+  const renderAnswer = (container, text) => {
+    container.replaceChildren();
+    const appendText = value => {
+      if (!value) return;
+      const node = document.createElement('div');
+      node.className = 'answertext';
+      node.textContent = value.replace(/\*\*(.*?)\*\*/g, '$1').replace(/(^|\s)\*(?=\S)|(?<=\S)\*(?=\s|$)/g, '$1');
+      container.appendChild(node);
+    };
+    const appendCode = (language, value) => {
+      const box = document.createElement('div');
+      box.className = 'codebox';
+      const head = document.createElement('div');
+      head.className = 'codehead';
+      const lang = document.createElement('span');
+      lang.textContent = language || 'código';
+      const copy = document.createElement('button');
+      copy.type = 'button';
+      copy.className = 'copybtn';
+      copy.textContent = 'Copiar código';
+      const pre = document.createElement('pre');
+      pre.className = 'codebody';
+      const codeNode = document.createElement('code');
+      codeNode.textContent = value;
+      pre.appendChild(codeNode);
+      copy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(value);
+          copy.textContent = '¡Copiado!';
+        } catch {
+          const range = document.createRange();
+          range.selectNodeContents(codeNode);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          copy.textContent = 'Seleccionado: copia manualmente';
+        }
+        setTimeout(() => { copy.textContent = 'Copiar código'; }, 1800);
+      });
+      head.append(lang, copy);
+      box.append(head, pre);
+      container.appendChild(box);
+    };
+
+    // Primero extrae los bloques internos tipados, incluso si están dentro de un
+    // bloque exterior etiquetado "markdown".
+    const fence = /```([^\n`]*)\n([\s\S]*?)```/g;
+    let cursor = 0, match, found = false;
+    while ((match = fence.exec(text)) !== null) {
+      const lang = (match[1] || '').trim().toLowerCase();
+      const content = match[2].replace(/\n$/, '');
+      if (lang === 'markdown' || lang === 'md' || lang === '') {
+        // Desempaqueta bloques de código anidados si los hay.
+        const innerFence = /```([a-zA-Z0-9_+#.-]+)?\s*\n([\s\S]*?)```/g;
+        let innerCursor = 0, inner;
+        let innerFound = false;
+        while ((inner = innerFence.exec(content)) !== null) {
+          appendText(content.slice(innerCursor, inner.index));
+          appendCode((inner[1] || 'código').trim(), inner[2].replace(/\n$/, ''));
+          innerCursor = innerFence.lastIndex;
+          innerFound = true;
+          found = true;
+        }
+        if (innerFound) {
+          appendText(content.slice(innerCursor));
+        } else if (content.trim()) {
+          // Si el modelo etiquetó el bloque entero como markdown pero dentro hay
+          // código fuente sin fences, mostrar ese contenido como caja copiable.
+          appendCode('código', content.trim());
+          found = true;
+        }
+      } else {
+        appendText(text.slice(cursor, match.index));
+        appendCode(lang, content);
+        found = true;
+      }
+      cursor = fence.lastIndex;
+    }
+    if (found) {
+      appendText(text.slice(cursor));
+    } else {
+      // Recuperación conservadora si el modelo olvidó los fences.
+      // Extrae solo líneas que parecen código y se detiene cuando detecta prosa.
+      const plain = text.trim();
+      const lines = plain.split('\n');
+      const codeStart = lines.findIndex(line =>
+        /^\s*(#include|#define|void|int|float|double|bool|char|String|long|uint\d+_t|if|else|for|while|switch|case|return|Serial\.|Wire\.|delay|pinMode|digitalWrite|analogRead|def|class|import|from|function|const|let|var)\b/.test(line)
+      );
+      if (codeStart >= 0) {
+        appendText(lines.slice(0, codeStart).join('\n').trim());
+        const codeLines = [];
+        let started = false;
+        for (const line of lines.slice(codeStart)) {
+          const trimmed = line.trim();
+          if (!trimmed) {
+            if (started) codeLines.push(line);
+            continue;
+          }
+          const looksLikeCode =
+            /^(#include\b|#define\b|\/\/|\/\*|\*\/?|\*|void\b|int\b|float\b|double\b|bool\b|char\b|String\b|long\b|uint\d+_t\b|if\b|else\b|for\b|while\b|switch\b|case\b|break;|return\b|Serial\.|Wire\.|delay\s*\(|pinMode\s*\(|digitalWrite\s*\(|analogRead\s*\(|analogWrite\s*\(|[{}]\s*$|[{};)]\s*$|[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*\s*\([^;]*\)\s*;?$)/.test(trimmed) ||
+            /[;{}]\s*$/.test(trimmed) ||
+            /^\s{2,}\S/.test(line);
+          // Una frase explicativa suele tener palabras y puntuación de prosa,
+          // sin terminar en sintaxis típica de código.
+          const prose = /^(este código|este programa|ahora|para usarlo|recuerda|nota:|explicación|conecta|después|por último|el código|aquí tienes|esto|you can|this code|note:)\b/i.test(trimmed);
+          if (prose) break;
+          if (looksLikeCode) {
+            codeLines.push(line);
+            started = true;
+          } else if (started && /^[\s]*$/.test(line)) {
+            codeLines.push(line);
+          } else if (started) {
+            // No seguir absorbiendo texto ambiguo: lo demás se deja fuera de la caja.
+            break;
+          }
+        }
+        const code = codeLines.join('\n').trim().replace(/^["'“”]+|["'“”]+$/g, '');
+        const consumed = codeLines.length;
+        if (code) appendCode('código', code);
+        const remainder = lines.slice(codeStart + consumed).join('\n').trim();
+        if (remainder) appendText(remainder);
+      } else {
+        appendText(text);
+      }
+    }
+  };
+
+  // Detecta bucles simples de repetición de frases o líneas en el texto acumulado.
+  const isRepeatingLoop = text => {
+    const lines = text.split('\n').map(s => s.trim()).filter(Boolean);
+    if (lines.length >= 6) {
+      const last = lines.slice(-6);
+      if (last.every(line => line === last[0])) return true;
+      const norm = s => s.toLowerCase().replace(/\d+/g, '#').replace(/\s+/g, ' ');
+      if (last.length === 6 && norm(last[0]) === norm(last[2]) &&
+          norm(last[2]) === norm(last[4]) && norm(last[1]) === norm(last[3]) &&
+          norm(last[3]) === norm(last[5])) return true;
+    }
+    if (text.length > 1800) {
+      const tail = text.slice(-1200);
+      for (let n = 40; n <= 240; n += 10) {
+        const unit = tail.slice(-n);
+        if (unit.length >= 40 && tail.endsWith(unit + unit)) return true;
+      }
+    }
+    return false;
+  };
+
+  const setBusy = value => {
+    busy = value;
+    send.disabled = value;
+    test.disabled = value;
+    stopBtn.disabled = !value;
+  };
+
+  stopBtn.addEventListener('click', () => {
+    stopRequested = true;
+    if (activeController) activeController.abort();
+    setStatus('Deteniendo generación…');
+  });
+  const saveUrl = () => {
+    const url = base();
+    try {
+      const parsed = new URL(url);
+      if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error();
+      localStorage.setItem('ollamaEndpoint', url);
+      setStatus('URL guardada: ' + url, 'ok');
+    } catch { setStatus('URL inválida. Usa http://IP:PUERTO', 'error'); }
+  };
+  $('#saveBtn').addEventListener('click', saveUrl);
+  $('#newChatSide').addEventListener('click', () => $('#clearBtn').click());
+  $('#clearBtn').addEventListener('click', () => {
+    stopRequested = true;
+    if (activeController) activeController.abort();
+    history = [];
+    messages.replaceChildren();
+    addMessage('assistant', 'Chat reiniciado. El modelo seguirá caliente en Ollama si keep_alive está activo.');
+    setStatus('Historial borrado.');
+  });
+  const DEFAULT_ENDPOINT = 'http://192.168.1.128:11434';
+  const saved = localStorage.getItem('ollamaEndpoint');
+  endpoint.value = saved || DEFAULT_ENDPOINT;
+  if (!saved) localStorage.setItem('ollamaEndpoint', DEFAULT_ENDPOINT);
+
+  test.addEventListener('click', async () => {
+    if (busy) return;
+    setStatus('Comprobando /api/tags…');
+    test.disabled = true;
+    try {
+      const r = await fetch(base() + '/api/tags');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const d = await r.json();
+      const names = (d.models || []).map(x => x.name).join(', ') || 'ninguno detectado';
+      setStatus('Conexión correcta · ' + names, 'ok');
+    } catch (e) {
+      setStatus('No conecta: ' + e.message + '. Comprueba CORS, URL y acceso al servidor.', 'error');
+    } finally { test.disabled = false; }
+  });
+
+  $('#chatForm').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    if (busy) return;
+    const prompt = input.value.trim();
+    if (!prompt) return;
+    let url;
+    try {
+      url = base();
+      const u = new URL(url);
+      if (!['http:', 'https:'].includes(u.protocol)) throw new Error();
+    } catch { setStatus('Introduce una URL válida.', 'error'); return; }
+
+    addMessage('user', prompt);
+    history.push({role:'user', content:prompt});
+    input.value = '';
+    input.style.height = 'auto';
+    const answerNode = addMessage('assistant', '');
+    const started = performance.now();
+    activeController = new AbortController();
+    stopRequested = false;
+    setBusy(true);
+    setStatus('Conectando con Ollama…');
+
+    // Recorta el historial enviado para reducir el coste de prefill.
+    // Mantiene el historial local completo, pero solo manda los últimos mensajes.
+    const recent = history.slice(-6);
+    try {
+      const response = await fetch(url + '/api/chat', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        signal: activeController.signal,
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [
+            { role: 'system', content: 'Eres un asistente de programación. SIEMPRE que generes código, ponlo en un bloque Markdown independiente con triple acento grave y el lenguaje justo después de la apertura, por ejemplo: ```arduino en una línea, luego el código, y al final ```. No uses un bloque exterior etiquetado markdown. Dentro de las vallas escribe exclusivamente código fuente, sin introducciones, explicaciones, títulos ni frases finales. Mantén cualquier explicación fuera del bloque. No envuelvas el código en comillas adicionales. Responde directamente a la petición, evita repetir frases, líneas o listas; no continúes con ejemplos redundantes. Si no sabes algo, dilo brevemente.' },
+            ...recent
+          ],
+          stream: true,
+          keep_alive: '15m',
+          options: {
+            num_predict: 4096,
+            temperature: 0.2,
+            num_ctx: 4096,
+            repeat_penalty: 1.15,
+            repeat_last_n: 128
+          }
+        })
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error('HTTP ' + response.status + (detail ? ': ' + detail.slice(0,180) : ''));
+      }
+      if (!response.body) throw new Error('El navegador no admite lectura de streaming.');
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '', answer = '', firstToken = null, lastPaint = 0;
+      while (true) {
+        const {value, done} = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, {stream:true});
+        let idx;
+        while ((idx = buffer.indexOf('\n')) !== -1) {
+          const line = buffer.slice(0, idx).trim();
+          buffer = buffer.slice(idx + 1);
+          if (!line) continue;
+          let part;
+          try { part = JSON.parse(line); }
+          catch { throw new Error('Fragmento JSON inválido: ' + line.slice(0,120)); }
+          if (part.error) throw new Error(part.error);
+          if (part.message && part.message.content) {
+            if (firstToken === null) {
+              firstToken = performance.now();
+              setStatus('Generando… primer texto en ' + ((firstToken-started)/1000).toFixed(2) + ' s');
+            }
+            answer += part.message.content;
+            if (isRepeatingLoop(answer)) {
+              stopRequested = true;
+              await reader.cancel();
+              if (activeController) activeController.abort();
+              setStatus('Generación detenida: se detectó repetición en bucle.', 'error');
+              break;
+            }
+            // Limita actualizaciones de DOM a ~30 fps sin perder texto.
+            const now = performance.now();
+            if (now - lastPaint > 33) {
+              const followOutput = isNearBottom();
+              renderAnswer(answerNode, answer);
+              if (followOutput) messages.scrollTop = messages.scrollHeight;
+              lastPaint = now;
+            }
+          }
+          if (part.done) {
+            renderAnswer(answerNode, answer);
+            const elapsed = (performance.now()-started)/1000;
+            const evalRate = part.eval_count && part.eval_duration ? (part.eval_count / (part.eval_duration/1e9)).toFixed(1) : null;
+            setStatus('Listo · ' + elapsed.toFixed(1) + ' s total' + (evalRate ? ' · ' + evalRate + ' tokens/s' : ''), 'ok');
+          }
+        }
+      }
+      buffer += decoder.decode();
+      if (buffer.trim()) {
+        const part = JSON.parse(buffer.trim());
+        if (part.error) throw new Error(part.error);
+        if (part.message?.content) answer += part.message.content;
+        if (part.done) {
+          const elapsed = (performance.now()-started)/1000;
+          const evalRate = part.eval_count && part.eval_duration ? (part.eval_count / (part.eval_duration/1e9)).toFixed(1) : null;
+          setStatus('Listo · ' + elapsed.toFixed(1) + ' s total' + (evalRate ? ' · ' + evalRate + ' tokens/s' : ''), 'ok');
+        }
+      }
+      renderAnswer(answerNode, answer || '(El modelo no devolvió texto.)');
+      history.push({role:'assistant', content:answer});
+      if (firstToken === null) setStatus('Respuesta recibida · ' + ((performance.now()-started)/1000).toFixed(1) + ' s', 'ok');
+    } catch (e) {
+      if (e.name === 'AbortError') {
+        if (answerNode.textContent === '' && stopRequested) answerNode.textContent = '(Generación detenida.)';
+        setStatus(stopRequested ? 'Generación detenida.' : 'Generación cancelada.');
+        if (history.length && history[history.length - 1]?.role === 'user') history.pop();
+      } else {
+        answerNode.textContent = 'Error: ' + e.message;
+        history.pop();
+        setStatus('Error de conexión. Si /api/tags funciona, revisa CORS y /api/chat.', 'error');
+      }
+    } finally {
+      activeController = null;
+      setBusy(false);
+      input.focus();
+    }
+  });
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      $('#chatForm').requestSubmit();
+    }
+  });
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight,140) + 'px';
+  });
+})();
+</script>
+</body>
+</html>
