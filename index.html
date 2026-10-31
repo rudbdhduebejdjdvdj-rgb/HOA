@@ -146,8 +146,8 @@ body.dark .topbar button:hover{background:#303136}
     if (index % 2 === 1) return part;
     return part
       .replace(/´/g, '')
-      .replace(/(^|\\n)([ \\t]*)#{1,6}[ \\t]+/g, '$1$2')
-      .replace(/(^|\\s)#(?=\\s|$)/g, '$1');
+      .replace(/(^|\n)([ \t]*)#{1,6}[ \t]+/g, '$1$2')
+      .replace(/(^|\s)#(?=\s|$)/g, '$1');
   }).join('');
   // Renderiza bloques Markdown de código y deja el texto explicativo fuera.
   // También reconoce respuestas donde el modelo anida accidentalmente ```arduino
@@ -167,7 +167,7 @@ body.dark .topbar button:hover{background:#303136}
       const head = document.createElement('div');
       head.className = 'codehead';
       const lang = document.createElement('span');
-      const normalizedLang = (language || '').trim().toLowerCase().split(/\\s+/)[0];
+      const normalizedLang = (language || '').trim().toLowerCase().split(/\s+/)[0];
       lang.textContent = language || 'código';
       const actions = document.createElement('div');
       actions.className = 'code-actions';
