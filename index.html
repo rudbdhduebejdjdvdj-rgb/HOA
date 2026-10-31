@@ -27,6 +27,15 @@ body.dark #messages::before{opacity:.065}
 .msg .answertext,.msg>div{display:block;position:relative;z-index:1;white-space:pre-wrap;overflow-wrap:anywhere}
 .user{align-self:flex-end;background:#eeece7;color:#202020}.assistant{align-self:flex-start;background:#fff;color:#202020;border:1px solid #e7e5df}
 .label{display:block;font-size:11px;color:#85857f;margin-bottom:6px;font-weight:650;letter-spacing:.04em}
+
+.answer-card{display:block;width:100%;margin:9px 0;padding:13px 15px;border:1px solid transparent;border-radius:12px;box-sizing:border-box;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.62}
+.answer-card-label{display:block;margin:0 0 7px;font-size:10px;font-weight:750;letter-spacing:.09em;text-transform:uppercase;opacity:.72}
+.answer-card-content{display:block;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+.explanation-card{background:#e8f3ff;border-color:#c7def7;color:#23415f}
+.steps-card{background:#fff5d6;border-color:#f0dda0;color:#5a481c}
+body.dark .explanation-card{background:#dcecff;border-color:#a9c8ed;color:#203c59}
+body.dark .steps-card{background:#fff0c2;border-color:#e6d18d;color:#514018}
+
 form{padding:12px max(20px,calc((100% - 900px)/2)) 22px;display:flex;align-items:center;background:#f8f7f4}body.dark form{background:#111214}.composer-shell{width:100%;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 18px;border:1px solid #dfded9;border-radius:23px;background:#fff;box-shadow:0 2px 10px #00000008;transition:border-color .2s,box-shadow .2s}.composer-shell:focus-within{border-color:#b8b6ae;box-shadow:0 3px 16px #0000000c}.composer-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto}.composer-actions button{display:grid;place-items:center;width:36px;height:36px;min-width:36px;padding:0;border-radius:50%;font-size:15px;line-height:1}.composer-actions .stop-action{background:#e9e8e4;color:#555;border:1px solid #deddd8}.composer-actions .send-action{background:#202020;color:#fff}.composer-actions button:disabled{opacity:.34;cursor:default}body.dark .composer-actions .stop-action{background:#34353a;color:#eee;border-color:#45464d}body.dark .composer-actions .send-action{background:#f0f0ef;color:#171717}
 textarea{flex:1;resize:none;min-height:48px;max-height:180px;border:0!important;outline:0;box-shadow:none!important;background:transparent!important;border-radius:0!important;padding:12px 0!important;color:inherit!important}textarea::placeholder{color:#999890}
 .hint{display:none}body.dark .composer-shell{background:#202125;border-color:#3a3b41}body.dark .composer-shell:focus-within{border-color:#62636b}
@@ -162,11 +171,40 @@ body.dark .topbar button:hover{background:#303136}
   const renderAnswer = (container, text) => {
     container.replaceChildren();
     const appendText = value => {
-      if (!value) return;
-      const node = document.createElement('div');
-      node.className = 'answertext';
-      node.textContent = value.replace(/\*\*(.*?)\*\*/g, '$1').replace(/(^|\s)\*(?=\S)/g, '$1').replace(/(\S)\*(?=\s|$)/g, '$1');
-      container.appendChild(node);
+      if (!value || !value.trim()) return;
+      const formatProse = text => text
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/(^|\s)\*(?=\S)/g, '$1')
+        .replace(/(\S)\*(?=\s|$)/g, '$1')
+        .trim();
+      const appendCard = (kind, content) => {
+        const cleaned = formatProse(content);
+        if (!cleaned) return;
+        const card = document.createElement('section');
+        const isSteps = kind === 'steps';
+        card.className = 'answer-card ' + (isSteps ? 'steps-card' : 'explanation-card');
+        const label = document.createElement('span');
+        label.className = 'answer-card-label';
+        label.textContent = isSteps ? 'Pasos y fases' : 'Explicación';
+        const body = document.createElement('div');
+        body.className = 'answer-card-content';
+        body.textContent = cleaned;
+        card.append(label, body);
+        container.appendChild(card);
+      };
+
+      const marker = /\[\[(PASOS|EXPLICACION)\]\]([\s\S]*?)\[\[\/\1\]\]/gi;
+      let cursor = 0;
+      let match;
+      let found = false;
+      while ((match = marker.exec(value)) !== null) {
+        if (match.index > cursor) appendCard('explanation', value.slice(cursor, match.index));
+        appendCard(match[1].toUpperCase() === 'PASOS' ? 'steps' : 'explanation', match[2]);
+        cursor = marker.lastIndex;
+        found = true;
+      }
+      if (cursor < value.length) appendCard('explanation', value.slice(cursor));
+      if (!found && cursor === 0) appendCard('explanation', value);
     };
     const appendCode = (language, value) => {
       const box = document.createElement('div');
@@ -486,7 +524,7 @@ body.dark .topbar button:hover{background:#303136}
         body: JSON.stringify({
           model: MODEL,
           messages: [
-            { role: 'system', content: 'Eres MIND, un asistente preciso y práctico. Responde en español salvo que te pidan otro idioma. En texto normal evita el carácter ´ y el símbolo #; no uses encabezados Markdown con #. Conserva esos caracteres cuando sean imprescindibles en nombres técnicos o instrucciones. Nunca alteres símbolos dentro de bloques de código, comandos, rutas, fórmulas o nombres de lenguaje. Para programar, prioriza que el código funcione: entrega soluciones completas y coherentes con el lenguaje, sistema operativo, placa, versión y librerías que indique el usuario; incluye imports, dependencias y configuración necesarias; no inventes funciones, pines, APIs ni versiones; evita pseudocódigo, fragmentos incompletos y marcadores como TODO. Revisa mentalmente sintaxis, nombres, tipos, flujo y errores comunes antes de responder. Si falta un dato crítico, señala claramente la suposición en vez de inventarlo. Mantén la solución compatible con el proyecto existente y modifica solo lo necesario. Usa bloques Markdown con el lenguaje correcto para el código y deja la explicación fuera. Da pasos breves para ejecutar y comprobar cuando sean útiles. No repitas código ni explicaciones.' },
+            { role: 'system', content: 'Eres MIND, un asistente preciso y práctico. Responde en español salvo que te pidan otro idioma. En texto normal evita el carácter ´ y el símbolo #; no uses encabezados Markdown con #. Conserva esos caracteres cuando sean imprescindibles en nombres técnicos o instrucciones. Nunca alteres símbolos dentro de bloques de código, comandos, rutas, fórmulas o nombres de lenguaje. Para programar, prioriza que el código funcione: entrega soluciones completas y coherentes con el lenguaje, sistema operativo, placa, versión y librerías que indique el usuario; incluye imports, dependencias y configuración necesarias; no inventes funciones, pines, APIs ni versiones; evita pseudocódigo, fragmentos incompletos y marcadores como TODO. Revisa mentalmente sintaxis, nombres, tipos, flujo y errores comunes antes de responder. Si falta un dato crítico, señala claramente la suposición en vez de inventarlo. Mantén la solución compatible con el proyecto existente y modifica solo lo necesario. Organiza la salida visualmente: todo el texto explicativo normal debe ir dentro de [[EXPLICACION]] y [[/EXPLICACION]]. Cuando describas pasos, fases, procedimientos o instrucciones ordenadas, pon cada bloque de pasos dentro de [[PASOS]] y [[/PASOS]], separado de la explicación. Escribe literalmente esas etiquetas solo como delimitadores, nunca las expliques ni las dejes visibles; la interfaz las convertirá en tarjetas azul claro para explicaciones y amarillo pastel para pasos. Usa bloques Markdown independientes con el lenguaje correcto para el código; el código debe permanecer fuera de las tarjetas de explicación y pasos. Si la respuesta es breve y no requiere pasos, usa una sola tarjeta de explicación. Da pasos breves para ejecutar y comprobar cuando sean útiles. No repitas código ni explicaciones.' },
             ...history
           ],
           stream: true,
