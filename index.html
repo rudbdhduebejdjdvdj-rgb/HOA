@@ -35,7 +35,18 @@ textarea{flex:1;resize:none;min-height:48px;max-height:180px;border:0!important;
  .codebox{margin:12px 0 3px;border:1px solid #c8cbd1;border-radius:11px;overflow:hidden;background:#fff;color:#20242b;box-shadow:0 2px 7px #0000000a}
 .codehead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px;background:#f1f2f4;color:#343943;border-bottom:1px solid #d8dbe0;font-size:12px}
 .code-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto}
-.downloadbtn{border:1px solid #cbd0d8;background:#fff;color:#242833;border-radius:8px;padding:7px 10px;font:600 12px 'Courier New',monospace;cursor:pointer}.downloadbtn:hover{background:#f0f4fa}body.dark .downloadbtn{background:#292b30;color:#f4f4f5;border-color:#555861}
+.downloadbtn{border:1px solid #cbd0d8;background:#fff;color:#242833;border-radius:8px;padding:7px 10px;font:600 12px 'Courier New',monospace;cursor:pointer}.downloadbtn:hover{background:#f0f4fa}
+.download-wrap{position:relative;display:inline-flex}
+.download-card{position:absolute;z-index:30;right:0;bottom:calc(100% + 9px);width:230px;padding:12px;display:flex;flex-direction:column;gap:8px;background:#fff;border:1px solid #d8dce4;border-radius:12px;box-shadow:0 10px 32px #0002;color:#252a33;font:13px system-ui,sans-serif}
+.download-card[hidden]{display:none}
+.download-card-title{font-size:13px;font-weight:750}
+.download-card-hint{font:12px 'Courier New',monospace;color:#687080;overflow-wrap:anywhere}
+.download-option{width:100%;padding:9px 10px;border:1px solid #d7dce5;border-radius:8px;background:#f7f9fc;color:#252a33;text-align:left;font:600 12px system-ui,sans-serif;cursor:pointer}
+.download-option:hover{background:#eaf1fb}
+body.dark .download-card{background:#22242a;color:#f1f2f4;border-color:#444751}
+body.dark .download-card-hint{color:#b7bdc9}
+body.dark .download-option{background:#30333b;color:#f1f2f4;border-color:#4a4e59}
+body.dark .downloadbtn{background:#292b30;color:#f4f4f5;border-color:#555861}
 .copybtn,.runbtn{padding:6px 10px;font-size:12px;background:#fff;color:#252932;border:1px solid #c8cbd1;border-radius:7px;white-space:nowrap}
 .copybtn:hover,.runbtn:hover{background:#f3f4f6;border-color:#9da3ad}
 .runbtn{font-weight:700}
@@ -124,7 +135,7 @@ body.dark .topbar button:hover{background:#303136}
     const technical = /\b(c[oó]digo|programa|programaci[oó]n|script|funci[oó]n|function|clase|class|aplicaci[oó]n|app|web|p[aá]gina|website|site|bot|api|algoritmo|software|proyecto|html|css|javascript|typescript|python|java|csharp|arduino|esp32|swift|kotlin|rust|golang|go|php|ruby|dart|sql|bash|shell|powershell|react|node|json|yaml|xml|lua|matlab|perl|scala|objective-c|assembly|ensamblador|verilog|vhdl|lenguaje)\b|(?:^|[^a-z0-9])(?:c\+\+|c#|f#)(?:$|[^a-z0-9])/i;
     return action.test(text) && technical.test(text);
   };
-  const CODE_CREATION_SUFFIX = 'Organiza la respuesta en este orden, sin repetir nada: primero una explicación breve en texto normal; segundo un único bloque Markdown completo y funcional, con la etiqueta correcta del lenguaje inmediatamente después de los tres acentos graves; tercero, si hace falta, una lista numerada de pasos concretos para instalar, configurar, ejecutar y verificar. Separa las partes sin tarjetas: escribe **Explicación** en una línea y la explicación en texto normal; luego el bloque de código en su caja; y, solo si son necesarios, escribe **Pasos** y una lista numerada en texto normal. No uses fondos, tarjetas ni cajas para explicación o pasos. No escribas etiquetas internas como [[EXPLICACION]], [[CODIGO]] o [[PASOS]]. No metas la explicación ni los pasos dentro de una caja: solo el código debe ir en su caja de código. Conserva la sintaxis exacta del lenguaje elegido.';
+  const CODE_CREATION_SUFFIX = 'Cuando el usuario pida código, entrega el archivo completo y ejecutable, no un ejemplo parcial, no solo 20 líneas, no pseudocódigo ni fragmentos con puntos suspensivos. Incluye todas las funciones, imports, configuración y cierres necesarios. Si una solución tiene varios archivos, entrega un bloque de código completo por archivo y usa nombres de archivo claros como index.html, styles.css, script.js o main.py. Si el usuario ya tiene un proyecto, conserva lo que existe y explica qué archivo completo debe reemplazar. Si hay un límite real de contexto o falta información, dilo explícitamente en vez de fingir que el código está completo. Organiza la respuesta en este orden, sin repetir nada: primero una explicación breve en texto normal; después los bloques Markdown completos y funcionales, cada uno con la etiqueta correcta del lenguaje inmediatamente después de los tres acentos graves; finalmente, si hace falta, pasos concretos para instalar, configurar, ejecutar y verificar. Separa las partes sin tarjetas: escribe **Explicación** en una línea y la explicación en texto normal; luego el bloque de código en su caja; y, solo si son necesarios, escribe **Pasos** y una lista numerada en texto normal. No uses fondos, tarjetas ni cajas para explicación o pasos. No escribas etiquetas internas como [[EXPLICACION]], [[CODIGO]] o [[PASOS]]. No metas la explicación ni los pasos dentro de una caja: solo el código debe ir en su caja de código. Conserva la sintaxis exacta del lenguaje elegido.';
 
   const getConnectionUrl = () => {
     const value = base();
@@ -240,32 +251,51 @@ body.dark .topbar button:hover{background:#303136}
         setTimeout(() => { copy.textContent = 'Copiar'; }, 1800);
       });
       actions.appendChild(copy);
-      const fileExtension = {javascript:'js',js:'js',typescript:'ts',ts:'ts',python:'py',py:'py',html:'html',htm:'html',css:'css',json:'json',xml:'xml',yaml:'yml',yml:'yml',markdown:'md',md:'md',bash:'sh',sh:'sh',shell:'sh',sql:'sql',swift:'swift',java:'java',kotlin:'kt',rust:'rs',go:'go',golang:'go',php:'php',ruby:'rb',c:'c',cpp:'cpp','c++':'cpp',csharp:'cs','c#':'cs',arduino:'ino',text:'txt',txt:'txt' };
+      const fileExtension = {javascript:'js',js:'js',typescript:'ts',ts:'ts',python:'py',py:'py',html:'html',htm:'html',css:'css',json:'json',xml:'xml',yaml:'yml',yml:'yml',markdown:'md',md:'md',bash:'sh',sh:'sh',shell:'sh',sql:'sql',swift:'swift',java:'java',kotlin:'kt',rust:'rs',go:'go',golang:'go',php:'php',ruby:'rb',c:'c',cpp:'cpp','c++':'cpp',csharp:'cs','c#':'cs',arduino:'ino',text:'txt',txt:'txt'};
       const ext = fileExtension[normalizedLang] || 'txt';
+      const defaultNames = {html:'index.html',css:'styles.css',javascript:'script.js',js:'script.js',typescript:'script.ts',ts:'script.ts',python:'main.py',py:'main.py',json:'data.json',markdown:'README.md',md:'README.md',arduino:'sketch.ino',swift:'main.swift',java:'Main.java',php:'index.php',sql:'query.sql',bash:'run.sh',sh:'run.sh'};
+      const downloadName = defaultNames[normalizedLang] || ('main.' + ext);
       const download = document.createElement('button');
       download.type = 'button';
       download.className = 'downloadbtn';
-      download.textContent = 'Descargar';
-      download.title = 'Descargar este bloque como archivo';
-      download.addEventListener('click', () => {
-        const blob = new Blob([value], {type: 'text/plain;charset=utf-8'});
+      download.textContent = 'Descargas';
+      download.title = 'Elegir cómo descargar este código';
+      download.setAttribute('aria-expanded','false');
+      download.setAttribute('aria-haspopup','dialog');
+
+      const downloadCard = document.createElement('div');
+      downloadCard.className = 'download-card';
+      downloadCard.hidden = true;
+      downloadCard.setAttribute('role','dialog');
+      downloadCard.setAttribute('aria-label','Opciones de descarga');
+      const downloadCardTitle = document.createElement('strong');
+      downloadCardTitle.className = 'download-card-title';
+      downloadCardTitle.textContent = 'Descargar archivo';
+      const downloadCardHint = document.createElement('span');
+      downloadCardHint.className = 'download-card-hint';
+      downloadCardHint.textContent = downloadName;
+      const singleDownload = document.createElement('button');
+      singleDownload.type = 'button';
+      singleDownload.className = 'download-option';
+      singleDownload.textContent = 'Descargar ' + ext.toUpperCase();
+      singleDownload.addEventListener('click', () => {
+        const blob = new Blob([value], {type: ext === 'html' ? 'text/html;charset=utf-8' : 'text/plain;charset=utf-8'});
         const objectUrl = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = objectUrl;
-        link.download = 'mind-archivo-' + (Array.from(container.querySelectorAll('.codebox')).indexOf(box) + 1) + '.' + ext;
+        link.download = downloadName;
         document.body.appendChild(link);
         link.click();
         link.remove();
         setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+        downloadCard.hidden = true;
+        download.setAttribute('aria-expanded','false');
       });
-      actions.appendChild(download);
-
-      const zip = document.createElement('button');
-      zip.type = 'button';
-      zip.className = 'downloadbtn';
-      zip.textContent = 'Descargar ZIP';
-      zip.title = 'Empaquetar los bloques de código de esta respuesta en un ZIP';
-      zip.addEventListener('click', async () => {
+      const zipDownload = document.createElement('button');
+      zipDownload.type = 'button';
+      zipDownload.className = 'download-option';
+      zipDownload.textContent = 'Descargar ZIP del proyecto';
+      zipDownload.addEventListener('click', async () => {
         try {
           if (!window.JSZip) {
             setStatus('Preparando ZIP…');
@@ -288,28 +318,46 @@ body.dark .topbar button:hover{background:#303136}
           if (!window.JSZip) throw new Error('No se pudo cargar el generador ZIP. Comprueba la conexión a Internet.');
           const archive = new window.JSZip();
           const codeboxes = Array.from(container.querySelectorAll('.codebox'));
+          const usedNames = new Set();
           codeboxes.forEach((codebox, index) => {
             const source = codebox.querySelector('code');
             if (!source) return;
-            const language = (codebox.querySelector('.codehead span')?.textContent || '').trim().toLowerCase().split(/\\s+/)[0];
+            const language = (codebox.querySelector('.codehead span')?.textContent || '').trim().toLowerCase().split(/\s+/)[0];
             const extensions = {javascript:'js',js:'js',typescript:'ts',ts:'ts',python:'py',py:'py',html:'html',htm:'html',css:'css',json:'json',xml:'xml',yaml:'yml',yml:'yml',markdown:'md',md:'md',bash:'sh',sh:'sh',sql:'sql',swift:'swift',java:'java',kotlin:'kt',rust:'rs',go:'go',php:'php',ruby:'rb',c:'c',cpp:'cpp','c++':'cpp',csharp:'cs','c#':'cs',arduino:'ino'};
-            archive.file('archivo-' + (index + 1) + '.' + (extensions[language] || 'txt'), source.textContent);
+            const extHere = extensions[language] || 'txt';
+            const names = {html:'index.html',css:'styles.css',javascript:'script.js',js:'script.js',typescript:'script.ts',ts:'script.ts',python:'main.py',py:'main.py',json:'data.json',markdown:'README.md',md:'README.md',arduino:'sketch.ino'};
+            let name = names[language] || ('archivo-' + (index + 1) + '.' + extHere);
+            if (usedNames.has(name)) name = 'archivo-' + (index + 1) + '.' + extHere;
+            usedNames.add(name);
+            archive.file(name, source.textContent);
           });
           const blob = await archive.generateAsync({type:'blob'});
           const objectUrl = URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = objectUrl;
-          link.download = 'mind-archivos.zip';
+          link.download = 'proyecto-mind.zip';
           document.body.appendChild(link);
           link.click();
           link.remove();
           setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+          downloadCard.hidden = true;
+          download.setAttribute('aria-expanded','false');
           setStatus('ZIP descargado correctamente.', 'ok');
         } catch (error) {
           setStatus(error.message || 'No se pudo crear el ZIP.', 'error');
         }
       });
-      actions.appendChild(zip);
+      downloadCard.append(downloadCardTitle,downloadCardHint,singleDownload,zipDownload);
+      download.addEventListener('click', () => {
+        const opening = downloadCard.hidden;
+        downloadCard.hidden = !opening;
+        download.setAttribute('aria-expanded',String(opening));
+      });
+      const downloadWrap = document.createElement('div');
+      downloadWrap.className = 'download-wrap';
+      downloadWrap.append(download,downloadCard);
+      actions.appendChild(downloadWrap);
+
 
 
       const canRun = ['html','htm','js','javascript'].includes(normalizedLang);
@@ -582,9 +630,9 @@ body.dark .topbar button:hover{background:#303136}
           stream: true,
           keep_alive: '15m',
           options: {
-            num_predict: 4096,
+            num_predict: 8192,
             temperature: 0.2,
-            num_ctx: 4096,
+            num_ctx: 8192,
             repeat_penalty: 1.15,
             repeat_last_n: 128
           }
