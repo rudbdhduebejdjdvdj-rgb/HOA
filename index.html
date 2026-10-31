@@ -789,15 +789,18 @@ body.dark .topbar button:hover{background:#303136}
           model: MODEL,
           messages: [
             { role: 'system', content: ('Eres MIND, un asistente preciso y práctico. Responde en español salvo que te pidan otro idioma. En texto normal evita el carácter ´ y el símbolo #; no uses encabezados Markdown con #. Conserva esos caracteres cuando sean imprescindibles en nombres técnicos o instrucciones. Nunca alteres símbolos dentro de bloques de código, comandos, rutas, fórmulas o nombres de lenguaje. Para programar, prioriza que el código funcione: entrega soluciones completas y coherentes con el lenguaje, sistema operativo, placa, versión y librerías que indique el usuario; incluye imports, dependencias y configuración necesarias; no inventes funciones, pines, APIs ni versiones; evita pseudocódigo, fragmentos incompletos y marcadores como TODO. Revisa mentalmente sintaxis, nombres, tipos, flujo y errores comunes antes de responder. Si falta un dato crítico, señala claramente la suposición en vez de inventarlo. Mantén la solución compatible con el proyecto existente y modifica solo lo necesario. Cuando una petición implique crear, escribir, generar o modificar código en cualquier lenguaje, responde en este orden: primero una explicación breve en texto normal; después un único bloque Markdown con el lenguaje correcto y el código completo; finalmente, si son necesarios, pasos numerados en texto normal. No uses etiquetas internas ni tarjetas para explicación o pasos: solo el bloque de código debe aparecer en su caja de código. Distingue las partes sin tarjetas: usa el rótulo en negrita **Explicación** seguido de texto normal; después el bloque de código en su caja; y, solo si hay instrucciones necesarias, el rótulo en negrita **Pasos** seguido de una lista numerada en texto normal. Puedes separar las partes con una línea en blanco. No uses fondos, tarjetas ni cajas para explicación o pasos. No repitas la explicación ni el código. Para saludos, respuestas breves, confirmaciones y contestaciones directas, responde simplemente en texto normal sin secciones. No repitas código ni explicaciones.' + buildSharedMemory(currentChatId)) },
-            ...history
+            // Evita que el historial acumulado consuma todo el contexto disponible.
+            ...history.slice(-12)
           ],
           stream: true,
           keep_alive: '15m',
           options: {
-            num_predict: 8192,
+            // Contexto amplio para peticiones técnicas y respuestas de código completas.
+            // Ollama puede necesitar más RAM cuanto mayores sean estos valores.
+            num_predict: 16384,
             temperature: 0.2,
-            num_ctx: 8192,
-            repeat_penalty: 1.15,
+            num_ctx: 32768,
+            repeat_penalty: 1.08,
             repeat_last_n: 128
           }
         })
@@ -841,7 +844,12 @@ body.dark .topbar button:hover{background:#303136}
           const evalRate = part.eval_count && part.eval_duration
             ? (part.eval_count / (part.eval_duration / 1e9)).toFixed(1)
             : null;
-          setStatus('Listo · ' + elapsed.toFixed(1) + ' s total' + (evalRate ? ' · ' + evalRate + ' tokens/s' : ''), 'ok');
+          const hitOutputLimit = part.done_reason === 'length';
+          setStatus(
+            (hitOutputLimit ? 'Aviso: MIND alcanzó el límite de salida; el código podría estar incompleto · ' : 'Listo · ') +
+            elapsed.toFixed(1) + ' s total' + (evalRate ? ' · ' + evalRate + ' tokens/s' : ''),
+            hitOutputLimit ? 'error' : 'ok'
+          );
         }
       };
       while (true) {
@@ -858,6 +866,9 @@ body.dark .topbar button:hover{background:#303136}
       buffer += decoder.decode();
       if (buffer.trim()) processStreamLine(buffer);
       if (!receivedDone && !answer) throw new Error('Ollama cerró la conexión sin devolver una respuesta.');
+      if (!receivedDone && answer) {
+        setStatus('La conexión terminó sin señal final de Ollama. Revisa si la respuesta quedó incompleta.', 'error');
+      }
       renderAnswer(answerNode, answer || '(El modelo no devolvió texto.)');
       history.push({ role: 'assistant', content: answer });
       const finishedChat = getCurrentChat();
