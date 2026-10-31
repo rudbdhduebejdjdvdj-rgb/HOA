@@ -65,7 +65,16 @@ body.dark .downloadbtn{background:#292b30;color:#f4f4f5;border-color:#555861}
 .sidebar{width:270px;flex:0 0 270px;background:#fff;border-right:1px solid #e5e3de;padding:22px 16px;display:flex;flex-direction:column;color:#252525}
 .brand{display:flex;align-items:center;gap:11px;padding:2px 10px 28px;font-size:18px}.brandmark{width:46px;height:46px;flex:0 0 46px;border-radius:12px;object-fit:contain;background:transparent;color:inherit;display:grid;place-items:center;font-weight:800;overflow:hidden}.brandmark img{width:100%;height:100%;object-fit:contain;display:block}.brandmark img.logo-failed{display:none}.brand small,.sidebar-foot small{display:block;color:#92918b;font-size:11px;margin-top:3px}
 .side-new{background:#f0efec;color:#202020;text-align:left;margin-bottom:16px;padding:13px 15px}
-.sidebar nav{display:flex;flex-direction:column;gap:7px}.sidebar nav a{text-decoration:none;color:#5e5c58;padding:11px 12px;border-radius:10px;font-size:14px}.sidebar nav a.coming-soon{opacity:.58;cursor:default;display:flex;align-items:center;gap:6px;flex-wrap:wrap}.sidebar nav a.coming-soon small{font-size:9px;color:#99978f;margin-left:auto;letter-spacing:.02em}.origin-help{margin:12px 0 0!important;font-size:11px!important;overflow-wrap:anywhere}.origin-help code{display:inline-block;margin-top:4px;padding:2px 5px;border-radius:5px;background:#eee}.sidebar nav a.active{background:#f3f1ed;color:#161616;font-weight:650}.nav-caption{font-size:10px;letter-spacing:.12em;color:#99978f;margin:23px 12px 5px}#recentEmpty{font-size:12px;color:#99978f;padding:10px 12px}.sidebar-foot{margin-top:auto;border-top:1px solid #e9e7e2;padding:16px 7px 3px;display:flex;gap:10px;align-items:center;font-size:13px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#bbb29d;color:white;font-weight:700}
+.sidebar nav{display:flex;flex-direction:column;gap:7px}.sidebar nav a{text-decoration:none;color:#5e5c58;padding:11px 12px;border-radius:10px;font-size:14px}.sidebar nav a.coming-soon{opacity:.58;cursor:default;display:flex;align-items:center;gap:6px;flex-wrap:wrap}.sidebar nav a.coming-soon small{font-size:9px;color:#99978f;margin-left:auto;letter-spacing:.02em}.origin-help{margin:12px 0 0!important;font-size:11px!important;overflow-wrap:anywhere}.origin-help code{display:inline-block;margin-top:4px;padding:2px 5px;border-radius:5px;background:#eee}.sidebar nav a.active{background:#f3f1ed;color:#161616;font-weight:650}.nav-caption{font-size:10px;letter-spacing:.12em;color:#99978f;margin:23px 12px 5px}#recentEmpty{font-size:12px;color:#99978f;padding:10px 12px}
+.recent-list{display:flex;flex-direction:column;gap:5px;max-height:42vh;overflow:auto;margin-top:6px}
+.recent-placeholder{font-size:12px;color:#99978f;padding:10px 12px}
+.recent-chat{display:flex;align-items:center;gap:7px;width:100%;padding:9px 10px;background:transparent;color:#5e5c58;text-align:left;font-size:12px;font-weight:500;border-radius:9px;min-width:0}
+.recent-chat:hover,.recent-chat.active{background:#f0efec;color:#202020}
+.recent-chat-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.recent-chat-delete{padding:2px 6px!important;background:transparent!important;color:#999!important;font-size:15px!important}
+body.dark .recent-chat{color:#c6c6c6}body.dark .recent-chat:hover,body.dark .recent-chat.active{background:#303136;color:#fff}
+
+.sidebar-foot{margin-top:auto;border-top:1px solid #e9e7e2;padding:16px 7px 3px;display:flex;gap:10px;align-items:center;font-size:13px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#bbb29d;color:white;font-weight:700}
 .workspace{min-width:0;flex:1;display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
 .topbar{height:54px;flex:0 0 54px;display:flex;align-items:center;gap:12px;padding:0 20px;border-bottom:1px solid #e6e4df;background:#fbfaf8}
 .topbar button{padding:7px 10px;border-radius:9px;background:transparent;color:inherit;font-size:18px}
@@ -97,7 +106,7 @@ body.dark .topbar button:hover{background:#303136}
 </head>
 <body>
 <main class="app">
-<aside class="sidebar"><div class="brand"><span class="brandmark"><img src="images/1.png" alt="Logo NightClaw" onerror="this.classList.add('logo-failed');this.parentElement.textContent='N'"></span><div><b>NightClaw</b><small>AI · MIND 1</small></div></div><button id="newChatSide" class="side-new" type="button">＋ Nuevo chat</button><nav><a href="#" class="coming-soon" aria-disabled="true">⌕ &nbsp; Buscar chats <small>Próximamente</small></a><a href="#" class="coming-soon" aria-disabled="true">▤ &nbsp; Biblioteca <small>Próximamente</small></a><a href="#" class="coming-soon" aria-disabled="true">◇ &nbsp; Explorar modelos <small>Próximamente</small></a><a href="#" class="coming-soon" aria-disabled="true">⌘ &nbsp; Herramientas <small>Próximamente</small></a><div class="nav-caption">TU ESPACIO</div><a href="#" class="coming-soon" aria-disabled="true">▦ &nbsp; Proyectos <small>Próximamente</small></a><div class="nav-caption">RECIENTES · PRÓXIMAMENTE</div><div id="recentEmpty">El historial de chats estará disponible próximamente.</div></nav><div class="sidebar-foot"><span class="avatar">N</span><div><b>Invitado</b><small>Vista previa</small></div></div></aside>
+<aside class="sidebar"><div class="brand"><span class="brandmark"><img src="images/1.png" alt="Logo NightClaw" onerror="this.classList.add('logo-failed');this.parentElement.textContent='N'"></span><div><b>NightClaw</b><small>AI · MIND 1</small></div></div><button id="newChatSide" class="side-new" type="button">＋ Nuevo chat</button><nav><a href="#" class="coming-soon" aria-disabled="true">⌕ &nbsp; Buscar chats <small>Próximamente</small></a><a href="#" class="coming-soon" aria-disabled="true">▤ &nbsp; Biblioteca <small>Próximamente</small></a><a href="#" class="coming-soon" aria-disabled="true">◇ &nbsp; Explorar modelos <small>Próximamente</small></a><a href="#" class="coming-soon" aria-disabled="true">⌘ &nbsp; Herramientas <small>Próximamente</small></a><div class="nav-caption">TU ESPACIO</div><a href="#" class="coming-soon" aria-disabled="true">▦ &nbsp; Proyectos <small>Próximamente</small></a><div class="nav-caption">RECIENTES · PRÓXIMAMENTE</div><div id="recentEmpty" class="recent-list" aria-label="Historial de chats"><span class="recent-placeholder">Tus conversaciones aparecerán aquí.</span></div></nav><div class="sidebar-foot"><span class="avatar">N</span><div><b>Invitado</b><small>Vista previa</small></div></div></aside>
 <section class="workspace">
 <div class="topbar"><button id="toggleSidebar" type="button" aria-label="Abrir o cerrar menú" title="Menú">☰</button><select id="modelSelect" class="model-select" aria-label="Seleccionar modelo"><option value="qwen2.5-coder:1.5b">Qwen 2.5 Coder 1.5B</option><option value="llama3.2">Llama 3.2</option><option value="mistral">Mistral</option><option value="deepseek-coder">DeepSeek Coder</option></select><button id="modelSettings" class="model-settings" type="button" aria-label="Ajustes del modelo" title="Ajustes del modelo">⚙</button><span class="spacer"></span><button id="themeToggle" type="button" aria-label="Cambiar tema" title="Cambiar entre modo claro y oscuro">☾</button></div>
 <section id="messages" aria-live="polite"><div class="empty-state" id="emptyState"><div class="hero-logo"><img src="images/1.png" alt="Logo de MIND" onerror="this.style.display='none';this.parentElement.classList.add('fallback')"><span class="fallback-letter">N</span></div><h2>Una gran inteligencia conlleva un gran alma.</h2><p>Bienvenido a MIND. ¿Qué vamos a crear hoy?</p></div></section>
@@ -124,6 +133,9 @@ body.dark .topbar button:hover{background:#303136}
   $('#modelSelect').addEventListener('change', () => { MODEL = $('#modelSelect').value; setStatus('Modelo: ' + MODEL + '. Comprueba que está instalado en Ollama.'); });
   let MODEL = $('#modelSelect').value;
   let history = [];
+  let chats = [];
+  let currentChatId = null;
+  const CHAT_STORAGE_KEY = 'nightclawChatsV1';
   let busy = false;
   let activeController = null;
   let stopRequested = false;
@@ -550,17 +562,161 @@ body.dark .topbar button:hover{background:#303136}
   };
   $('#saveBtn').addEventListener('click', saveUrl);
   const emptyStateMarkup = '<div class="empty-state" id="emptyState"><div class="hero-logo"><img src="images/1.png" alt="Logo de MIND" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'fallback\')"><span class="fallback-letter">N</span></div><h2>Una gran inteligencia conlleva un gran alma.</h2><p>Bienvenido a MIND. ¿Qué vamos a crear hoy?</p></div>';
-  const newChat = () => {
-    requestCounter += 1;
-    stopRequested = true;
-    const previousController = activeController;
-    activeController = null;
-    if (previousController) previousController.abort();
-    history = [];
-    setBusy(false);
-    messages.innerHTML = emptyStateMarkup;
-    setStatus('Historial borrado.');
+  const saveChats = () => {
+    try {
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chats.slice(0, 80)));
+    } catch (error) {
+      setStatus('No se pudo guardar el historial. Puede que el almacenamiento del navegador esté lleno.', 'error');
+    }
   };
+  const loadChats = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '[]');
+      chats = Array.isArray(saved) ? saved.filter(chat => chat && typeof chat.id === 'string' && Array.isArray(chat.history) && Array.isArray(chat.messages)) : [];
+    } catch { chats = []; }
+  };
+  const makeChat = () => ({
+    id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2),
+    title: 'Nuevo chat',
+    history: [],
+    messages: [],
+    updatedAt: Date.now()
+  });
+  const getCurrentChat = () => chats.find(chat => chat.id === currentChatId) || null;
+  const ensureCurrentChat = () => {
+    let chat = getCurrentChat();
+    if (!chat) {
+      chat = makeChat();
+      chats.unshift(chat);
+      currentChatId = chat.id;
+      history = chat.history;
+    }
+    return chat;
+  };
+  const saveCurrentChat = () => {
+    const chat = getCurrentChat();
+    if (!chat) return;
+    chat.history = history;
+    chat.updatedAt = Date.now();
+    saveChats();
+    renderChatList();
+  };
+  const renderChatList = () => {
+    const list = $('#recentEmpty');
+    list.replaceChildren();
+    const ordered = [...chats].sort((a,b) => (b.updatedAt || 0) - (a.updatedAt || 0)).slice(0, 40);
+    if (!ordered.length) {
+      const empty = document.createElement('span');
+      empty.className = 'recent-placeholder';
+      empty.textContent = 'Tus conversaciones aparecerán aquí.';
+      list.appendChild(empty);
+      return;
+    }
+    for (const chat of ordered) {
+      const row = document.createElement('div');
+      row.style.display = 'flex';
+      row.style.alignItems = 'center';
+      row.style.gap = '2px';
+      const open = document.createElement('button');
+      open.type = 'button';
+      open.className = 'recent-chat' + (chat.id === currentChatId ? ' active' : '');
+      open.title = chat.title || 'Chat';
+      const title = document.createElement('span');
+      title.className = 'recent-chat-title';
+      title.textContent = chat.title || 'Nuevo chat';
+      open.appendChild(title);
+      open.addEventListener('click', () => activateChat(chat.id));
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'recent-chat-delete';
+      remove.textContent = '×';
+      remove.title = 'Eliminar conversación';
+      remove.setAttribute('aria-label', 'Eliminar ' + (chat.title || 'conversación'));
+      remove.addEventListener('click', event => {
+        event.stopPropagation();
+        if (!window.confirm('¿Eliminar esta conversación?')) return;
+        chats = chats.filter(item => item.id !== chat.id);
+        if (currentChatId === chat.id) {
+          currentChatId = null;
+          history = [];
+          messages.innerHTML = emptyStateMarkup;
+        }
+        saveChats();
+        renderChatList();
+        if (!getCurrentChat()) setStatus('Conversación eliminada.');
+      });
+      row.append(open, remove);
+      list.appendChild(row);
+    }
+  };
+  const activateChat = id => {
+    const chat = chats.find(item => item.id === id);
+    if (!chat) return;
+    if (busy) {
+      requestCounter += 1;
+      stopRequested = true;
+      if (activeController) activeController.abort();
+      activeController = null;
+      setBusy(false);
+    }
+    currentChatId = id;
+    history = chat.history.map(item => ({role:item.role, content:item.content}));
+    messages.replaceChildren();
+    if (!chat.messages.length) {
+      messages.innerHTML = emptyStateMarkup;
+    } else {
+      for (const item of chat.messages) {
+        const body = addMessage(item.role, '');
+        if (item.role === 'assistant') renderAnswer(body, item.text || '');
+        else body.textContent = item.text || '';
+      }
+    }
+    renderChatList();
+    setStatus('Chat abierto: ' + (chat.title || 'Nuevo chat'));
+    input.focus();
+  };
+  const buildSharedMemory = excludeId => {
+    const lines = [];
+    const otherChats = [...chats].filter(chat => chat.id !== excludeId).sort((a,b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+    for (const chat of otherChats) {
+      const userMessages = (chat.messages || []).filter(item => item.role === 'user').slice(-4);
+      if (!userMessages.length) continue;
+      lines.push('Conversación anterior: ' + (chat.title || 'Chat'));
+      for (const item of userMessages) {
+        const shortText = String(item.text || '').replace(/\s+/g, ' ').slice(0, 240);
+        if (shortText) lines.push('- El usuario comentó o pidió: ' + shortText);
+      }
+      if (lines.join('\n').length > 2600) break;
+    }
+    const memory = lines.join('\n').slice(0, 3000);
+    return memory ? '\n\nMemoria compartida de otros chats (contexto orientativo; prioriza siempre el mensaje actual):\n' + memory : '';
+  };
+  const newChat = () => {
+    if (busy) {
+      requestCounter += 1;
+      stopRequested = true;
+      if (activeController) activeController.abort();
+      activeController = null;
+      setBusy(false);
+    }
+    currentChatId = null;
+    history = [];
+    const chat = makeChat();
+    chats.unshift(chat);
+    currentChatId = chat.id;
+    messages.innerHTML = emptyStateMarkup;
+    saveChats();
+    renderChatList();
+    setStatus('Nuevo chat listo. Las conversaciones anteriores se conservan.');
+    input.focus();
+  };
+  loadChats();
+  if (chats.length) {
+    chats.sort((a,b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+    activateChat(chats[0].id);
+  } else {
+    renderChatList();
+  }
   $('#newChatSide').addEventListener('click', newChat);
   document.querySelectorAll('.coming-soon').forEach(link => {
     link.addEventListener('click', event => event.preventDefault());
@@ -595,6 +751,13 @@ body.dark .topbar button:hover{background:#303136}
     const prompt = input.value.trim();
     if (!prompt) return;
     addMessage('user', prompt);
+    const activeChat = ensureCurrentChat();
+    activeChat.messages.push({role:'user', text:prompt});
+    if (!activeChat.messages.some(item => item.role === 'assistant')) {
+      activeChat.title = prompt.replace(/\s+/g, ' ').slice(0, 42) || 'Nuevo chat';
+    }
+    activeChat.updatedAt = Date.now();
+    saveCurrentChat();
     input.value = '';
     input.style.height = 'auto';
     const answerNode = addMessage('assistant', '');
@@ -608,6 +771,7 @@ body.dark .topbar button:hover{background:#303136}
     }
     const requestPrompt = isCodeCreationRequest(prompt) ? prompt + ', ' + CODE_CREATION_SUFFIX : prompt;
     history.push({role:'user', content:requestPrompt});
+    saveCurrentChat();
     const started = performance.now();
     let answer = '';
     const requestId = ++requestCounter;
@@ -624,7 +788,7 @@ body.dark .topbar button:hover{background:#303136}
         body: JSON.stringify({
           model: MODEL,
           messages: [
-            { role: 'system', content: 'Eres MIND, un asistente preciso y práctico. Responde en español salvo que te pidan otro idioma. En texto normal evita el carácter ´ y el símbolo #; no uses encabezados Markdown con #. Conserva esos caracteres cuando sean imprescindibles en nombres técnicos o instrucciones. Nunca alteres símbolos dentro de bloques de código, comandos, rutas, fórmulas o nombres de lenguaje. Para programar, prioriza que el código funcione: entrega soluciones completas y coherentes con el lenguaje, sistema operativo, placa, versión y librerías que indique el usuario; incluye imports, dependencias y configuración necesarias; no inventes funciones, pines, APIs ni versiones; evita pseudocódigo, fragmentos incompletos y marcadores como TODO. Revisa mentalmente sintaxis, nombres, tipos, flujo y errores comunes antes de responder. Si falta un dato crítico, señala claramente la suposición en vez de inventarlo. Mantén la solución compatible con el proyecto existente y modifica solo lo necesario. Cuando una petición implique crear, escribir, generar o modificar código en cualquier lenguaje, responde en este orden: primero una explicación breve en texto normal; después un único bloque Markdown con el lenguaje correcto y el código completo; finalmente, si son necesarios, pasos numerados en texto normal. No uses etiquetas internas ni tarjetas para explicación o pasos: solo el bloque de código debe aparecer en su caja de código. Distingue las partes sin tarjetas: usa el rótulo en negrita **Explicación** seguido de texto normal; después el bloque de código en su caja; y, solo si hay instrucciones necesarias, el rótulo en negrita **Pasos** seguido de una lista numerada en texto normal. Puedes separar las partes con una línea en blanco. No uses fondos, tarjetas ni cajas para explicación o pasos. No repitas la explicación ni el código. Para saludos, respuestas breves, confirmaciones y contestaciones directas, responde simplemente en texto normal sin secciones. No repitas código ni explicaciones.' },
+            { role: 'system', content: ('Eres MIND, un asistente preciso y práctico. Responde en español salvo que te pidan otro idioma. En texto normal evita el carácter ´ y el símbolo #; no uses encabezados Markdown con #. Conserva esos caracteres cuando sean imprescindibles en nombres técnicos o instrucciones. Nunca alteres símbolos dentro de bloques de código, comandos, rutas, fórmulas o nombres de lenguaje. Para programar, prioriza que el código funcione: entrega soluciones completas y coherentes con el lenguaje, sistema operativo, placa, versión y librerías que indique el usuario; incluye imports, dependencias y configuración necesarias; no inventes funciones, pines, APIs ni versiones; evita pseudocódigo, fragmentos incompletos y marcadores como TODO. Revisa mentalmente sintaxis, nombres, tipos, flujo y errores comunes antes de responder. Si falta un dato crítico, señala claramente la suposición en vez de inventarlo. Mantén la solución compatible con el proyecto existente y modifica solo lo necesario. Cuando una petición implique crear, escribir, generar o modificar código en cualquier lenguaje, responde en este orden: primero una explicación breve en texto normal; después un único bloque Markdown con el lenguaje correcto y el código completo; finalmente, si son necesarios, pasos numerados en texto normal. No uses etiquetas internas ni tarjetas para explicación o pasos: solo el bloque de código debe aparecer en su caja de código. Distingue las partes sin tarjetas: usa el rótulo en negrita **Explicación** seguido de texto normal; después el bloque de código en su caja; y, solo si hay instrucciones necesarias, el rótulo en negrita **Pasos** seguido de una lista numerada en texto normal. Puedes separar las partes con una línea en blanco. No uses fondos, tarjetas ni cajas para explicación o pasos. No repitas la explicación ni el código. Para saludos, respuestas breves, confirmaciones y contestaciones directas, responde simplemente en texto normal sin secciones. No repitas código ni explicaciones.' + buildSharedMemory(currentChatId)) },
             ...history
           ],
           stream: true,
@@ -696,12 +860,20 @@ body.dark .topbar button:hover{background:#303136}
       if (!receivedDone && !answer) throw new Error('Ollama cerró la conexión sin devolver una respuesta.');
       renderAnswer(answerNode, answer || '(El modelo no devolvió texto.)');
       history.push({ role: 'assistant', content: answer });
+      const finishedChat = getCurrentChat();
+      if (finishedChat) finishedChat.messages.push({role:'assistant', text:answer});
+      saveCurrentChat();
       if (!receivedDone) setStatus('Respuesta recibida · ' + ((performance.now() - started) / 1000).toFixed(1) + ' s', 'ok');
     } catch (e) {
       if (requestId !== requestCounter) return;
       if (e.name === 'AbortError') {
         renderAnswer(answerNode, answer || '(Generación detenida antes de recibir respuesta.)');
-        if (answer.trim()) history.push({role:'assistant', content:answer});
+        if (answer.trim()) {
+          history.push({role:'assistant', content:answer});
+          const stoppedChat = getCurrentChat();
+          if (stoppedChat) stoppedChat.messages.push({role:'assistant', text:answer});
+          saveCurrentChat();
+        }
         setStatus(stopRequested ? 'Generación detenida.' : 'Generación cancelada.');
       } else {
         answerNode.textContent = 'Error: ' + e.message;
