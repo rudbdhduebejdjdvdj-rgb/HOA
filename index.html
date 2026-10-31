@@ -443,18 +443,76 @@ body.dark .topbar button:hover{background:#303136}
             { role: 'system', content: 'Eres MIND, un asistente preciso y práctico. Responde en español salvo que te pidan otro idioma. En texto normal evita el carácter ´ y el símbolo #; no uses encabezados Markdown con #. Conserva esos caracteres cuando sean imprescindibles en nombres técnicos o instrucciones. Nunca alteres símbolos dentro de bloques de código, comandos, rutas, fórmulas o nombres de lenguaje. Para programar, prioriza que el código funcione: entrega soluciones completas y coherentes con el lenguaje, sistema operativo, placa, versión y librerías que indique el usuario; incluye imports, dependencias y configuración necesarias; no inventes funciones, pines, APIs ni versiones; evita pseudocódigo, fragmentos incompletos y marcadores como TODO. Revisa mentalmente sintaxis, nombres, tipos, flujo y errores comunes antes de responder. Si falta un dato crítico, señala claramente la suposición en vez de inventarlo. Mantén la solución compatible con el proyecto existente y modifica solo lo necesario. Usa bloques Markdown con el lenguaje correcto para el código y deja la explicación fuera. Da pasos breves para ejecutar y comprobar cuando sean útiles. No repitas código ni explicaciones.' },
             ...history
           ],
-          stream: true
+          stream: true,
+          keep_alive: '15m',
+          options: {
+            num_predict: 4096,
+            temperature: 0.2,
+            num_ctx: 4096,
+            repeat_penalty: 1.15,
+            repeat_last_n: 128
+          }
         })
       });
       if (!response.ok) {
         const detail = await response.text();
         throw new Error('HTTP ' + response.status + ': ' + detail.slice(0, 300));
       }
-      const data = await response.json();
-      answer = data.message?.content || '(El modelo no devolvió texto.)';
-      renderAnswer(answerNode, answer);
-      history.push({role:'assistant', content:answer});
-      setStatus('Conectado · ' + MODEL, 'ok');
+      if (!response.body) throw new Error('El navegador no permite leer la respuesta en streaming.');
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let firstTokenAt = null;
+      let lastPaint = 0;
+      let receivedDone = false;
+      const processStreamLine = line => {
+        const cleanLine = line.trim();
+        if (!cleanLine) return;
+        let part;
+        try { part = JSON.parse(cleanLine); }
+        catch { throw new Error('Fragmento NDJSON inválido: ' + cleanLine.slice(0, 160)); }
+        if (part.error) throw new Error(part.error);
+        if (part.message && typeof part.message.content === 'string' && part.message.content) {
+          if (firstTokenAt === null) {
+            firstTokenAt = performance.now();
+            setStatus('Generando… primer texto en ' + ((firstTokenAt - started) / 1000).toFixed(2) + ' s');
+          }
+          answer += part.message.content;
+          const now = performance.now();
+          if (now - lastPaint >= 40) {
+            const followOutput = isNearBottom();
+            renderAnswer(answerNode, answer);
+            if (followOutput) messages.scrollTop = messages.scrollHeight;
+            lastPaint = now;
+          }
+        }
+        if (part.done) {
+          receivedDone = true;
+          renderAnswer(answerNode, answer || '(El modelo no devolvió texto.)');
+          const elapsed = (performance.now() - started) / 1000;
+          const evalRate = part.eval_count && part.eval_duration
+            ? (part.eval_count / (part.eval_duration / 1e9)).toFixed(1)
+            : null;
+          setStatus('Listo · ' + elapsed.toFixed(1) + ' s total' + (evalRate ? ' · ' + evalRate + ' tokens/s' : ''), 'ok');
+        }
+      };
+      while (true) {
+        const chunk = await reader.read();
+        if (chunk.done) break;
+        buffer += decoder.decode(chunk.value, { stream: true });
+        let newline;
+        while ((newline = buffer.indexOf('\n')) !== -1) {
+          const line = buffer.slice(0, newline);
+          buffer = buffer.slice(newline + 1);
+          processStreamLine(line);
+        }
+      }
+      buffer += decoder.decode();
+      if (buffer.trim()) processStreamLine(buffer);
+      if (!receivedDone && !answer) throw new Error('Ollama cerró la conexión sin devolver una respuesta.');
+      renderAnswer(answerNode, answer || '(El modelo no devolvió texto.)');
+      history.push({ role: 'assistant', content: answer });
+      if (!receivedDone) setStatus('Respuesta recibida · ' + ((performance.now() - started) / 1000).toFixed(1) + ' s', 'ok');
     } catch (e) {
       if (requestId !== requestCounter) return;
       if (e.name === 'AbortError') {
