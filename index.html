@@ -99,6 +99,7 @@ body.dark .topbar button:hover{background:#303136}
   let busy = false;
   let activeController = null;
   let stopRequested = false;
+  let requestCounter = 0;
 
   const base = () => endpoint.value.trim().replace(/\/+$/, '');
   const getConnectionUrl = () => {
@@ -317,10 +318,13 @@ body.dark .topbar button:hover{background:#303136}
   $('#saveBtn').addEventListener('click', saveUrl);
   const emptyStateMarkup = '<div class="empty-state" id="emptyState"><div class="hero-logo"><img src="images/1.png" alt="Logo de MIND" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'fallback\')"><span class="fallback-letter">N</span></div><h2>Una gran inteligencia conlleva un gran alma.</h2><p>Bienvenido a MIND. ¿Qué vamos a crear hoy?</p></div>';
   const newChat = () => {
+    requestCounter += 1;
     stopRequested = true;
-    if (activeController) activeController.abort();
+    const previousController = activeController;
     activeController = null;
+    if (previousController) previousController.abort();
     history = [];
+    setBusy(false);
     messages.innerHTML = emptyStateMarkup;
     setStatus('Historial borrado.');
   };
@@ -386,6 +390,7 @@ body.dark .topbar button:hover{background:#303136}
     history.push({role:'user', content:prompt});
     const started = performance.now();
     let answer = '';
+    const requestId = ++requestCounter;
     activeController = new AbortController();
     stopRequested = false;
     setBusy(true);
@@ -488,6 +493,7 @@ body.dark .topbar button:hover{background:#303136}
       history.push({role:'assistant', content:answer});
       if (firstToken === null) setStatus('Respuesta recibida · ' + ((performance.now()-started)/1000).toFixed(1) + ' s', 'ok');
     } catch (e) {
+      if (requestId !== requestCounter) return;
       if (e.name === 'AbortError') {
         renderAnswer(answerNode, answer || '(Generación detenida antes de recibir respuesta.)');
         if (answer.trim()) history.push({role:'assistant', content:answer});
@@ -497,9 +503,11 @@ body.dark .topbar button:hover{background:#303136}
         setStatus('Error al conectar con Ollama: ' + e.message, 'error');
       }
     } finally {
-      activeController = null;
-      setBusy(false);
-      input.focus();
+      if (requestId === requestCounter) {
+        activeController = null;
+        setBusy(false);
+        input.focus();
+      }
     }
   });
   input.addEventListener('keydown', e => {
