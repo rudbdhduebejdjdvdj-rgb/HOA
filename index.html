@@ -125,6 +125,13 @@ body.dark .topbar button:hover{background:#303136}
   let requestCounter = 0;
 
   const base = () => endpoint.value.trim().replace(/\/+$/, '');
+  const isCodeCreationRequest = text => {
+    const action = /\b(hazme|haz|hacerme|creame|créame|crear|crea|escribe|programa|generame|genérame|construye|desarrolla|implementa|build|create|write|generate|make|implement|develop)\b/i;
+    const technical = /\b(c[oó]digo|programa|programaci[oó]n|script|funci[oó]n|function|clase|class|aplicaci[oó]n|app|web|p[aá]gina|website|site|bot|api|algoritmo|software|proyecto|html|css|javascript|typescript|python|java|c\+\+|c#|csharp|arduino|esp32|swift|kotlin|rust|golang|\bgo\b|php|ruby|dart|sql|bash|shell|powershell|react|node|json|yaml|xml|lua|r\s+language|matlab|perl|scala|objective-c|assembly|ensamblador|verilog|vhdl)\b/i;
+    return action.test(text) && technical.test(text);
+  };
+  const CODE_CREATION_SUFFIX = ' Devuelve exactamente tres secciones, en este orden y UNA SOLA VEZ cada una. Primera sección: [[EXPLICACION]] una explicación breve de qué hace la solución y cómo funciona, sin repetirla [[/EXPLICACION]]. Segunda sección: [[CODIGO]] seguida de un único bloque Markdown con el lenguaje correcto, con el código completo y funcional, y después [[/CODIGO]]. Tercera sección: [[PASOS]] instrucciones numeradas para instalar, configurar, ejecutar y comprobar el código, solo las que sean necesarias [[/PASOS]]. No escribas texto fuera de esas tres secciones. No repitas la explicación ni el código. No pongas código dentro de explicación o pasos. Conserva la sintaxis exacta del lenguaje elegido.';
+
   const getConnectionUrl = () => {
     const value = base();
     if (!value) throw new Error('Introduce la dirección del servidor Ollama.');
@@ -172,14 +179,19 @@ body.dark .topbar button:hover{background:#303136}
     container.replaceChildren();
     const appendText = value => {
       if (!value || !value.trim()) return;
+      value = value.replace(/\[\[\/?CODIGO\]\]/gi, '');
       const formatProse = text => text
         .replace(/\*\*(.*?)\*\*/g, '$1')
         .replace(/(^|\s)\*(?=\S)/g, '$1')
         .replace(/(\S)\*(?=\s|$)/g, '$1')
         .trim();
+      const seenCards = new Set();
       const appendCard = (kind, content) => {
         const cleaned = formatProse(content);
         if (!cleaned) return;
+        const signature = kind + '|' + cleaned.replace(/\s+/g, ' ').toLowerCase();
+        if (seenCards.has(signature)) return;
+        seenCards.add(signature);
         const card = document.createElement('section');
         const isSteps = kind === 'steps';
         card.className = 'answer-card ' + (isSteps ? 'steps-card' : 'explanation-card');
@@ -507,7 +519,8 @@ body.dark .topbar button:hover{background:#303136}
       setStatus(error.message, 'error');
       return;
     }
-    history.push({role:'user', content:prompt});
+    const requestPrompt = isCodeCreationRequest(prompt) ? prompt + ', ' + CODE_CREATION_SUFFIX : prompt;
+    history.push({role:'user', content:requestPrompt});
     const started = performance.now();
     let answer = '';
     const requestId = ++requestCounter;
@@ -524,7 +537,7 @@ body.dark .topbar button:hover{background:#303136}
         body: JSON.stringify({
           model: MODEL,
           messages: [
-            { role: 'system', content: 'Eres MIND, un asistente preciso y práctico. Responde en español salvo que te pidan otro idioma. En texto normal evita el carácter ´ y el símbolo #; no uses encabezados Markdown con #. Conserva esos caracteres cuando sean imprescindibles en nombres técnicos o instrucciones. Nunca alteres símbolos dentro de bloques de código, comandos, rutas, fórmulas o nombres de lenguaje. Para programar, prioriza que el código funcione: entrega soluciones completas y coherentes con el lenguaje, sistema operativo, placa, versión y librerías que indique el usuario; incluye imports, dependencias y configuración necesarias; no inventes funciones, pines, APIs ni versiones; evita pseudocódigo, fragmentos incompletos y marcadores como TODO. Revisa mentalmente sintaxis, nombres, tipos, flujo y errores comunes antes de responder. Si falta un dato crítico, señala claramente la suposición en vez de inventarlo. Mantén la solución compatible con el proyecto existente y modifica solo lo necesario. Organiza la salida visualmente: todo el texto explicativo normal debe ir dentro de [[EXPLICACION]] y [[/EXPLICACION]]. Cuando describas pasos, fases, procedimientos o instrucciones ordenadas, pon cada bloque de pasos dentro de [[PASOS]] y [[/PASOS]], separado de la explicación. Escribe literalmente esas etiquetas solo como delimitadores, nunca las expliques ni las dejes visibles; la interfaz las convertirá en tarjetas azul claro para explicaciones y amarillo pastel para pasos. Usa bloques Markdown independientes con el lenguaje correcto para el código; el código debe permanecer fuera de las tarjetas de explicación y pasos. Si la respuesta es breve y no requiere pasos, usa una sola tarjeta de explicación. Da pasos breves para ejecutar y comprobar cuando sean útiles. No repitas código ni explicaciones.' },
+            { role: 'system', content: 'Eres MIND, un asistente preciso y práctico. Responde en español salvo que te pidan otro idioma. En texto normal evita el carácter ´ y el símbolo #; no uses encabezados Markdown con #. Conserva esos caracteres cuando sean imprescindibles en nombres técnicos o instrucciones. Nunca alteres símbolos dentro de bloques de código, comandos, rutas, fórmulas o nombres de lenguaje. Para programar, prioriza que el código funcione: entrega soluciones completas y coherentes con el lenguaje, sistema operativo, placa, versión y librerías que indique el usuario; incluye imports, dependencias y configuración necesarias; no inventes funciones, pines, APIs ni versiones; evita pseudocódigo, fragmentos incompletos y marcadores como TODO. Revisa mentalmente sintaxis, nombres, tipos, flujo y errores comunes antes de responder. Si falta un dato crítico, señala claramente la suposición en vez de inventarlo. Mantén la solución compatible con el proyecto existente y modifica solo lo necesario. Cuando una petición implique crear, escribir, generar o modificar código en cualquier lenguaje, responde con tres secciones y solo una vez cada una, en este orden: [[EXPLICACION]] explicación breve [[/EXPLICACION]], [[CODIGO]] un único bloque Markdown con lenguaje y código completo [[/CODIGO]], [[PASOS]] pasos numerados para instalar, configurar, ejecutar y verificar [[/PASOS]]. No repitas la explicación, el código ni las tarjetas. No escribas texto fuera de esas secciones. La interfaz convierte las secciones en tarjetas azul claro, caja de código y tarjeta amarillo pastel. Para preguntas que no sean de programación, usa explicación azul y pasos amarillos solo cuando aporten valor. No repitas código ni explicaciones.' },
             ...history
           ],
           stream: true,
