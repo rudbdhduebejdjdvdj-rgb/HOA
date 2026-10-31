@@ -19,6 +19,9 @@ input{flex:1}#status{min-height:22px;flex:0 0 auto;padding:4px max(24px,calc((10
 #messages::before{content:"";position:absolute;z-index:0;pointer-events:none;left:50%;top:48%;transform:translate(-50%,-50%);width:min(58vw,520px);height:min(58vw,520px);background:url("images/1.png") center/contain no-repeat;opacity:.035}
 body.dark #messages::before{opacity:.065}
 #messages > *{position:relative;z-index:2}
+
+/* Tipografía de conversación */
+#prompt,.msg{font-family:'Courier New',Courier,monospace}
 .msg{position:relative;z-index:2;display:block;flex:0 0 auto;visibility:visible;opacity:1;max-width:88%;min-height:44px;padding:14px 17px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;color:#202020;contain:none}
 .msg .label{display:block;position:relative;z-index:1}
 .msg .answertext,.msg>div{display:block;position:relative;z-index:1;white-space:pre-wrap;overflow-wrap:anywhere}
