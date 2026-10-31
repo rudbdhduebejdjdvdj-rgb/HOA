@@ -33,8 +33,12 @@ textarea{flex:1;resize:none;min-height:48px;max-height:180px;border:0!important;
 .copybtn,.runbtn{padding:6px 10px;font-size:12px;background:#fff;color:#252932;border:1px solid #c8cbd1;border-radius:7px;white-space:nowrap}
 .copybtn:hover,.runbtn:hover{background:#f3f4f6;border-color:#9da3ad}
 .runbtn{font-weight:700}
-.codebody{display:block;margin:0;padding:13px;max-width:100%;overflow:auto;overscroll-behavior:contain;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch;max-height:520px;white-space:pre;tab-size:4;font:13px/1.58 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#20242b;background:#fff;zoom:1}
-.codebody code{font:inherit;color:inherit}
+.code-stage{width:100%;min-width:0;overflow:hidden;background:#fff}
+.codebody{display:block;width:100%;min-width:0;max-width:100%;margin:0;padding:13px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;max-height:520px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;tab-size:4;font:13px/1.58 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#20242b;background:#fff;zoom:1;box-sizing:border-box}
+.codebody code{display:block;width:100%;min-width:0;max-width:100%;font:inherit;color:inherit;white-space:inherit;overflow-wrap:inherit;word-break:inherit}
+.codebody[hidden],.run-area[hidden]{display:none!important}
+.tok-keyword{color:#8b5cf6;font-weight:650}.tok-string{color:#db2777}.tok-comment{color:#7b8492;font-style:italic}.tok-number{color:#0f766e}.tok-function{color:#2563eb}.tok-literal{color:#c2410c;font-weight:600}
+.run-area{width:100%;min-width:0;padding:10px;background:#f7f8fa;border-top:1px solid #d8dbe0;box-sizing:border-box}
 .run-area{padding:10px;background:#f7f8fa;border-top:1px solid #d8dbe0}
 .run-frame{display:block;width:100%;height:360px;border:1px solid #c8cbd1;border-radius:8px;background:#fff}
 .run-note{font-size:11px;color:#737984;margin:0 0 8px}
@@ -175,11 +179,31 @@ body.dark .topbar button:hover{background:#303136}
       copy.type = 'button';
       copy.className = 'copybtn';
       copy.textContent = 'Copiar';
+
       const pre = document.createElement('pre');
       pre.className = 'codebody';
       const codeNode = document.createElement('code');
-      codeNode.textContent = value;
+
+      // Resaltado ligero y seguro: todo el contenido se inserta como texto, nunca como HTML.
+      const tokenPattern = /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(\b(?:if|else|elif|for|while|do|switch|case|break|continue|return|function|def|class|const|let|var|new|try|catch|finally|throw|async|await|import|from|export|default|public|private|protected|static|void|int|float|double|bool|boolean|char|byte|short|long|unsigned|signed|String|struct|enum|interface|extends|implements|this|self|super|yield|with|as|in|is|not|and|or|pass|lambda|package|using|namespace|delete|typeof|instanceof|of)\b)|(\b(?:true|false|null|undefined|None|True|False|NaN|Infinity)\b)|(\b\d+(?:\.\d+)?(?:e[+-]?\d+)?\b)|(\b[A-Za-z_$][\w$]*(?=\s*\())/gi;
+      let cursor = 0;
+      let token;
+      while ((token = tokenPattern.exec(value)) !== null) {
+        if (token.index > cursor) codeNode.appendChild(document.createTextNode(value.slice(cursor, token.index)));
+        const span = document.createElement('span');
+        span.textContent = token[0];
+        if (token[1]) span.className = 'tok-string';
+        else if (token[2]) span.className = 'tok-comment';
+        else if (token[3]) span.className = 'tok-keyword';
+        else if (token[4]) span.className = 'tok-literal';
+        else if (token[5]) span.className = 'tok-number';
+        else if (token[6]) span.className = 'tok-function';
+        codeNode.appendChild(span);
+        cursor = tokenPattern.lastIndex;
+      }
+      if (cursor < value.length) codeNode.appendChild(document.createTextNode(value.slice(cursor)));
       pre.appendChild(codeNode);
+
       copy.addEventListener('click', async () => {
         try {
           await navigator.clipboard.writeText(value);
@@ -195,24 +219,36 @@ body.dark .topbar button:hover{background:#303136}
         setTimeout(() => { copy.textContent = 'Copiar'; }, 1800);
       });
       actions.appendChild(copy);
+
       const canRun = ['html','htm','js','javascript'].includes(normalizedLang);
       const runArea = document.createElement('div');
       runArea.className = 'run-area';
       runArea.hidden = true;
+
       if (canRun) {
         const run = document.createElement('button');
         run.type = 'button';
         run.className = 'runbtn';
         run.textContent = 'Ejecutar';
         run.addEventListener('click', () => {
+          // El mismo recuadro alterna entre el código fuente y la ejecución.
+          if (!runArea.hidden) {
+            runArea.replaceChildren();
+            runArea.hidden = true;
+            pre.hidden = false;
+            run.textContent = 'Ejecutar';
+            return;
+          }
+
           runArea.replaceChildren();
           const note = document.createElement('p');
           note.className = 'run-note';
-          note.textContent = 'Vista previa aislada. Para detenerla, vuelve a pulsar Ejecutar o cierra el chat.';
+          note.textContent = 'Vista previa aislada. Pulsa Código para volver al texto.';
           const frame = document.createElement('iframe');
           frame.className = 'run-frame';
           frame.setAttribute('sandbox','allow-scripts');
-          frame.setAttribute('title','Vista previa de código ejecutado');
+          frame.setAttribute('title','Vista previa del código ejecutado');
+
           if (normalizedLang === 'html' || normalizedLang === 'htm') {
             frame.srcdoc = value;
           } else {
@@ -220,18 +256,25 @@ body.dark .topbar button:hover{background:#303136}
             let binary = '';
             for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
             const encoded = btoa(binary);
-            frame.srcdoc = '<!doctype html><html><head><meta charset=\"utf-8\"><style>body{font:14px system-ui;padding:12px;margin:0;color:#20242b;background:#fff}#output{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.5 ui-monospace,monospace}.stage{border-bottom:1px solid #ddd;padding-bottom:8px;margin-bottom:10px}</style></head><body><div class=\"stage\" id=\"stage\">JavaScript ejecutado en un entorno aislado.</div><div id=\"output\"></div><script>const raw=atob(\'' + encoded + '\');const bytes=Uint8Array.from(raw,c=>c.charCodeAt(0));const source=new TextDecoder().decode(bytes);const out=document.getElementById(\'output\');const format=v=>{if(typeof v===\'string\')return v;try{return JSON.stringify(v)}catch{return String(v)}};const write=(...v)=>{const line=document.createElement(\'div\');line.textContent=v.map(format).join(\' \');out.appendChild(line)};console.log=(...v)=>write(...v);console.warn=(...v)=>write(\'Aviso:\',...v);console.error=(...v)=>write(\'Error:\',...v);window.addEventListener(\'error\',e=>write(\'Error:\',e.message));try{const result=new Function(source)();if(result!==undefined)write(result);if(!out.childNodes.length)write(\'Código ejecutado. No generó salida en consola.\')}catch(e){write(e.stack||String(e))}</scr' + 'ipt></body></html>';
+            frame.srcdoc = '<!doctype html><html><head><meta charset="utf-8"><style>body{font:14px system-ui;padding:12px;margin:0;color:#20242b;background:#fff}#output{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.5 ui-monospace,monospace}</style></head><body><div>JavaScript ejecutado en un entorno aislado.</div><div id="output"></div><script>const raw=atob("' + encoded + '");const bytes=Uint8Array.from(raw,c=>c.charCodeAt(0));const source=new TextDecoder().decode(bytes);const out=document.getElementById("output");const write=(...v)=>{const row=document.createElement("div");row.textContent=v.map(x=>typeof x==="string"?x:JSON.stringify(x)).join(" ");out.appendChild(row)};console.log=(...v)=>write(...v);console.error=(...v)=>write("Error:",...v);window.addEventListener("error",e=>write("Error:",e.message));try{const result=new Function(source)();if(result!==undefined)write(result);if(!out.childNodes.length)write("Código ejecutado. No generó salida en consola.")}catch(e){write(e.stack||String(e))}</scr' + 'ipt></body></html>';
           }
           runArea.append(note,frame);
+          pre.hidden = true;
           runArea.hidden = false;
+          run.textContent = 'Código';
         });
         actions.appendChild(run);
       }
+
+      const stage = document.createElement('div');
+      stage.className = 'code-stage';
+      stage.appendChild(pre);
+      if (canRun) stage.appendChild(runArea);
       head.append(lang,actions);
-      box.append(head,pre);
-      if (canRun) box.appendChild(runArea);
+      box.append(head,stage);
       container.appendChild(box);
     };
+
     // Primero extrae los bloques internos tipados, incluso si están dentro de un
     // bloque exterior etiquetado "markdown".
     const fence = /```([^\n`]*)\n([\s\S]*?)```/g;
