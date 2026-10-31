@@ -147,7 +147,7 @@ body.dark .topbar button:hover{background:#303136}
     return part
       .replace(/´/g, '')
       .replace(/(^|\n)([ \t]*)#{1,6}[ \t]+/g, '$1$2')
-      .replace(/(^|\s)#(?=\s|$)/g, '$1');
+      .replace(/(^|[^A-Za-z0-9])#(?!include\b|define\b|if\b|ifdef\b|ifndef\b|elif\b|else\b|endif\b|pragma\b)/gi, '$1');
   }).join('');
   // Renderiza bloques Markdown de código y deja el texto explicativo fuera.
   // También reconoce respuestas donde el modelo anida accidentalmente ```arduino
