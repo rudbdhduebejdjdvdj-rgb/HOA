@@ -125,17 +125,6 @@ body.dark .topbar button:hover{background:#303136}
     }
     return parsed.origin + parsed.pathname.replace(/\/+$/, '');
   };
-  const fetchOptionsFor = (url, options = {}) => {
-    const parsed = new URL(url);
-    const addressSpace = parsed.hostname === 'localhost' || parsed.hostname.startsWith('127.')
-      ? 'loopback'
-      : (parsed.protocol === 'http:' && isPrivateIPv4(parsed.hostname) ? 'local' : null);
-    return {
-      mode: 'cors',
-      ...options,
-      ...(addressSpace ? {targetAddressSpace: addressSpace} : {})
-    };
-  };
   const setStatus = (text, state='neutral') => {
     status.textContent = text;
     status.style.color = state === 'ok' ? '#86efac' : state === 'error' ? '#fca5a5' : '#a1a1aa';
@@ -356,10 +345,10 @@ body.dark .topbar button:hover{background:#303136}
   document.querySelectorAll('.coming-soon').forEach(link => {
     link.addEventListener('click', event => event.preventDefault());
   });
-  const DEFAULT_ENDPOINT = 'http://192.168.0.128:11434';
+  const DEFAULT_ENDPOINT = 'http://192.168.1.128:11434';
   let savedEndpoint = localStorage.getItem('ollamaEndpoint') || '';
-  // Migra automáticamente la IP LAN anterior que quedó guardada en algunos navegadores.
-  if (savedEndpoint === 'http://192.168.1.128:11434') {
+  // Restaura la IP fija del HTML funcional si quedó guardada la IP anterior incorrecta.
+  if (savedEndpoint === 'http://192.168.0.128:11434') {
     savedEndpoint = DEFAULT_ENDPOINT;
     localStorage.setItem('ollamaEndpoint', savedEndpoint);
   }
@@ -386,7 +375,7 @@ body.dark .topbar button:hover{background:#303136}
     test.disabled = true;
     try {
       const connectionUrl = getConnectionUrl();
-      const r = await fetch(connectionUrl + '/api/tags', fetchOptionsFor(connectionUrl));
+      const r = await fetch(connectionUrl + '/api/tags');
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const d = await r.json();
       const names = (d.models || []).map(x => x.name).join(', ') || 'ninguno detectado';
@@ -428,7 +417,7 @@ body.dark .topbar button:hover{background:#303136}
     // Mantiene el historial local completo, pero solo manda los últimos mensajes.
     const recent = history.slice(-6);
     try {
-      const response = await fetch(url + '/api/chat', fetchOptionsFor(url, {
+      const response = await fetch(url + '/api/chat', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         signal: activeController.signal,
@@ -448,7 +437,7 @@ body.dark .topbar button:hover{background:#303136}
             repeat_last_n: 128
           }
         })
-      }));
+      });
       if (!response.ok) {
         const detail = await response.text();
         throw new Error('HTTP ' + response.status + (detail ? ': ' + detail.slice(0,180) : ''));
