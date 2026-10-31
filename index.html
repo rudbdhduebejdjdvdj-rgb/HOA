@@ -14,23 +14,23 @@ button{font:inherit;border:0;border-radius:10px;padding:10px 13px;background:#20
 button:disabled{opacity:.55;cursor:wait}
 .settings{padding:10px 20px;display:flex;gap:8px;border-bottom:1px solid #e8e6e1;background:#fbfaf8}
 input,textarea{font:inherit;min-width:0;background:#fff;color:#222;border:1px solid #deddd8;border-radius:12px;padding:10px 12px}
-input{flex:1}#status{padding:8px 20px;font-size:12px;color:#85857f;border-bottom:1px solid #e8e6e1;background:#fbfaf8}
-#messages{flex:1;min-height:0;overflow-y:auto;padding:28px max(24px,calc((100% - 900px)/2));display:flex;flex-direction:column;gap:18px;scroll-behavior:auto;background:#f8f7f4}
+input{flex:1}#status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#messages{position:relative;isolation:isolate;flex:1;min-height:0;overflow-y:auto;padding:34px max(24px,calc((100% - 900px)/2));display:flex;flex-direction:column;gap:18px;scroll-behavior:auto;background:#f8f7f4}#messages::before{content:"";position:absolute;z-index:-1;pointer-events:none;left:50%;top:48%;transform:translate(-50%,-50%);width:min(58vw,520px);height:min(58vw,520px);background:url("images/1.png") center/contain no-repeat;opacity:.035}body.dark #messages::before{opacity:.065}
 .msg{max-width:88%;padding:14px 17px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;contain:content;color:#202020}
 .user{align-self:flex-end;background:#eeece7}.assistant{align-self:flex-start;background:#fff;border:1px solid #e7e5df}
 .label{display:block;font-size:11px;color:#85857f;margin-bottom:6px;font-weight:650;letter-spacing:.04em}
-form{padding:18px max(20px,calc((100% - 900px)/2));border-top:1px solid #e8e6e1;display:flex;gap:8px;align-items:flex-end;background:#fbfaf8}
-textarea{flex:1;resize:vertical;min-height:56px;max-height:160px}
-.hint{font-size:11px;color:#85857f;padding:0 24px 12px;background:#fbfaf8;text-align:center}
+form{padding:12px max(20px,calc((100% - 900px)/2)) 22px;display:flex;align-items:center;background:#f8f7f4}body.dark form{background:#111214}.composer-shell{width:100%;display:flex;align-items:flex-end;gap:10px;padding:9px 10px 9px 19px;border:1px solid #dfded9;border-radius:25px;background:#fff;box-shadow:0 2px 10px #00000008;transition:border-color .2s,box-shadow .2s}.composer-shell:focus-within{border-color:#b8b6ae;box-shadow:0 3px 16px #0000000c}
+textarea{flex:1;resize:none;min-height:48px;max-height:180px;border:0!important;outline:0;box-shadow:none!important;background:transparent!important;border-radius:0!important;padding:12px 0!important;color:inherit!important}textarea::placeholder{color:#999890}
+.hint{display:none}.send-action{flex:0 0 auto;min-width:42px;height:42px;padding:0 14px;border-radius:50px;display:grid;place-items:center;background:#202020;color:#fff;font-size:13px;font-weight:650}.send-action.stop-action{border-radius:50px;background:#777;color:#fff}body.dark .composer-shell{background:#202125;border-color:#3a3b41}body.dark .composer-shell:focus-within{border-color:#62636b}body.dark .send-action{background:#f1f1f1;color:#181818}body.dark .send-action.stop-action{background:#666;color:#fff}
  .codebox{margin:10px 0 2px;border:1px solid #303039;border-radius:10px;overflow:hidden;background:#111218;color:#f4f4f5}
 .codehead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;background:#24252c;color:#c4c4cc;font-size:12px}
 .copybtn{padding:6px 10px;font-size:12px;background:#e4e4e7;color:#18181b}
 .codebody{margin:0;padding:12px;overflow:auto;max-height:520px;white-space:pre;tab-size:4;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#f4f4f5}
 .codebody code{font:inherit}
-@media(max-width:560px){.app{height:96vh}.settings{flex-wrap:wrap}.settings input{flex-basis:100%}.msg{max-width:97%}header{align-items:flex-start}.codebody{font-size:12px}}
+@media(max-width:560px){.app{height:100vh}.msg{max-width:97%}.codebody{font-size:12px}.empty-state{padding:20px 8px 35px}.hero-logo{width:88px;height:88px}form{padding:10px 14px 16px}.composer-shell{padding-left:15px}}
 
 .sidebar{width:270px;flex:0 0 270px;background:#fff;border-right:1px solid #e5e3de;padding:22px 16px;display:flex;flex-direction:column;color:#252525}
-.brand{display:flex;align-items:center;gap:11px;padding:2px 10px 28px;font-size:18px}.brandmark{width:46px;height:46px;flex:0 0 46px;border-radius:12px;object-fit:contain;background:#1d1d20;color:#fff;display:grid;place-items:center;font-weight:800;overflow:hidden}.brandmark img{width:100%;height:100%;object-fit:contain;display:block}.brandmark img.logo-failed{display:none}.brand small,.sidebar-foot small{display:block;color:#92918b;font-size:11px;margin-top:3px}
+.brand{display:flex;align-items:center;gap:11px;padding:2px 10px 28px;font-size:18px}.brandmark{width:46px;height:46px;flex:0 0 46px;border-radius:12px;object-fit:contain;background:transparent;color:inherit;display:grid;place-items:center;font-weight:800;overflow:hidden}.brandmark img{width:100%;height:100%;object-fit:contain;display:block}.brandmark img.logo-failed{display:none}.brand small,.sidebar-foot small{display:block;color:#92918b;font-size:11px;margin-top:3px}
 .side-new{background:#f0efec;color:#202020;text-align:left;margin-bottom:16px;padding:13px 15px}
 .sidebar nav{display:flex;flex-direction:column;gap:7px}.sidebar nav a{text-decoration:none;color:#5e5c58;padding:11px 12px;border-radius:10px;font-size:14px}.sidebar nav a.active{background:#f3f1ed;color:#161616;font-weight:650}.nav-caption{font-size:10px;letter-spacing:.12em;color:#99978f;margin:23px 12px 5px}#recentEmpty{font-size:12px;color:#99978f;padding:10px 12px}.sidebar-foot{margin-top:auto;border-top:1px solid #e9e7e2;padding:16px 7px 3px;display:flex;gap:10px;align-items:center;font-size:13px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#bbb29d;color:white;font-weight:700}
 .workspace{min-width:0;flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
@@ -39,7 +39,7 @@ textarea{flex:1;resize:vertical;min-height:56px;max-height:160px}
 .topbar button:hover{background:#efeee9}
 .topbar .model-select{font-size:14px;font-weight:650;border:0;background:transparent;color:inherit;max-width:250px;padding:8px}
 .topbar .spacer{flex:1}
-.topbar .model-settings{font-size:16px}
+.topbar .model-settings{font-size:16px}.empty-state{position:relative;z-index:1;margin:auto;max-width:560px;width:100%;padding:34px 20px 52px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px}.hero-logo{width:112px;height:112px;display:grid;place-items:center;background:transparent}.hero-logo img{width:100%;height:100%;object-fit:contain;display:block}.hero-logo .fallback-letter{display:none;width:80px;height:80px;border-radius:24px;background:#202020;color:#fff;font-size:38px;font-weight:700;place-items:center}.hero-logo.fallback .fallback-letter{display:grid}.empty-state h2{margin:0;color:#252525;font-size:clamp(21px,3vw,27px);line-height:1.35;font-weight:520;letter-spacing:-.035em}.empty-state p{margin:0;color:#898982;font-size:14px;line-height:1.6}body.dark .empty-state h2{color:#f0f0ef}body.dark .empty-state p{color:#9b9ba0}
 #settingsPanel{display:none;position:fixed;z-index:50;inset:0;background:#0006;align-items:center;justify-content:center;padding:18px}
 #settingsPanel.open{display:flex}
 .settings-card{width:min(520px,100%);background:var(--panel,#fff);color:var(--text,#202020);border:1px solid var(--border,#deddd8);border-radius:16px;padding:22px;box-shadow:0 20px 80px #0003}
@@ -48,10 +48,10 @@ textarea{flex:1;resize:vertical;min-height:56px;max-height:160px}
 .settings-card input{width:100%;margin-top:8px}
 body.dark{background:#111214;color:#eee;--panel:#1c1d20;--text:#f3f3f3;--border:#38393e}
 body.dark .app,body.dark .workspace,body.dark #messages{background:#111214;color:#eee}
-body.dark header,body.dark .topbar,body.dark .settings,body.dark #status,body.dark form,body.dark .hint{background:#191a1d;color:#eee;border-color:#33343a}
+body.dark header,body.dark .topbar,body.dark .settings{background:#191a1d;color:#eee;border-color:#33343a}
 body.dark .sidebar{background:#191a1d;color:#eee;border-color:#33343a}
 body.dark .sidebar nav a{color:#c6c6c6}body.dark .sidebar nav a.active,body.dark .side-new{background:#303136;color:#fff}
-body.dark .brandmark{background:#f1f1f1;color:#171717}
+body.dark .brandmark{background:transparent;color:inherit}
 body.dark input,body.dark textarea{background:#242529;color:#f3f3f3;border-color:#414249}
 body.dark .msg.assistant{background:#202125;color:#eee;border-color:#38393e}
 body.dark .msg.user{background:#303136;color:#eee}
@@ -67,12 +67,9 @@ body.dark .topbar button:hover{background:#303136}
 <aside class="sidebar"><div class="brand"><span class="brandmark"><img src="images/1.png" alt="Logo NightClaw" onerror="this.classList.add('logo-failed');this.parentElement.textContent='N'"></span><div><b>NightClaw</b><small>AI · MIND 1</small></div></div><button id="newChatSide" class="side-new" type="button">＋ Nuevo chat</button><nav><a href="#" class="active">⌕ &nbsp; Buscar chats</a><a href="#">▤ &nbsp; Biblioteca</a><a href="#">◇ &nbsp; Explorar modelos</a><a href="#">⌘ &nbsp; Herramientas</a><div class="nav-caption">TU ESPACIO</div><a href="#">▦ &nbsp; Proyectos</a><div class="nav-caption">RECIENTES</div><div id="recentEmpty">Tus conversaciones aparecerán aquí.</div></nav><div class="sidebar-foot"><span class="avatar">N</span><div><b>Invitado</b><small>Vista previa</small></div></div></aside>
 <section class="workspace">
 <div class="topbar"><button id="toggleSidebar" type="button" aria-label="Abrir o cerrar menú" title="Menú">☰</button><select id="modelSelect" class="model-select" aria-label="Seleccionar modelo"><option value="qwen2.5-coder:1.5b">Qwen 2.5 Coder 1.5B</option><option value="llama3.2">Llama 3.2</option><option value="mistral">Mistral</option><option value="deepseek-coder">DeepSeek Coder</option></select><button id="modelSettings" class="model-settings" type="button" aria-label="Ajustes del modelo" title="Ajustes del modelo">⚙</button><span class="spacer"></span><button id="themeToggle" type="button" aria-label="Cambiar tema" title="Cambiar entre modo claro y oscuro">☾</button></div>
-<header><div><h1>MIND · Ollama Ultra Rápido</h1><div class="sub">qwen2.5-coder:1.5b · streaming · código largo</div></div></header>
-
-<div id="status">Introduce la URL de Ollama y pulsa Probar.</div>
-<section id="messages" aria-live="polite"><div class="msg assistant"><span class="label">MIND</span>Listo. Escribe una pregunta corta para probar la velocidad.</div></section>
-<form id="chatForm"><textarea id="prompt" rows="1" placeholder="Escribe un mensaje… (Enter para enviar)" required></textarea><button id="stopBtn" type="button" disabled>Detener</button><button id="sendBtn" type="submit">Enviar</button></form>
-<div class="hint">Streaming activado. Hasta 4096 tokens de salida; el rendimiento depende del servidor y del modelo.</div>
+<div id="status" aria-live="polite"></div>
+<section id="messages" aria-live="polite"><div class="empty-state" id="emptyState"><div class="hero-logo"><img src="images/1.png" alt="Logo de MIND" onerror="this.style.display='none';this.parentElement.classList.add('fallback')"><span class="fallback-letter">N</span></div><h2>Una gran inteligencia conlleva un gran alma.</h2><p>Bienvenido a MIND. ¿Qué vamos a crear hoy?</p></div></section>
+<form id="chatForm"><div class="composer-shell"><textarea id="prompt" rows="1" placeholder="Pregunta a MIND" required></textarea><button id="sendBtn" class="send-action" type="submit" aria-label="Enviar mensaje" title="Enviar">↑</button></div></form>
 </section>
 <div id="settingsPanel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="settings-card"><h2 id="settingsTitle">Ajustes de conexión</h2><p>Configura el servidor de Ollama y comprueba la conexión del modelo seleccionado.</p><label for="endpoint">URL del servidor Ollama</label><input id="endpoint" aria-label="URL del servidor" value="http://192.168.1.128:11434" placeholder="http://IP:PUERTO"><div id="settingsStatus" style="font-size:12px;margin-top:8px;color:#888">La conexión se configura aquí.</div><div class="settings-actions"><button id="closeSettings" type="button" style="background:#777">Cerrar</button><button id="saveBtn" type="button">Guardar URL</button><button id="testBtn" type="button">Probar</button></div></div></div>
 </main>
@@ -81,7 +78,7 @@ body.dark .topbar button:hover{background:#303136}
   'use strict';
   const $ = s => document.querySelector(s);
   const endpoint = $('#endpoint'), status = $('#status'), messages = $('#messages');
-  const input = $('#prompt'), send = $('#sendBtn'), test = $('#testBtn'), stopBtn = $('#stopBtn');
+  const input = $('#prompt'), send = $('#sendBtn'), test = $('#testBtn');
   const settingsPanel = $('#settingsPanel');
   const settingsStatus = $('#settingsStatus');
   $('#toggleSidebar').addEventListener('click', () => { const side = document.querySelector('.sidebar'); side.style.display = side.style.display === 'none' ? 'flex' : 'none'; });
@@ -112,6 +109,8 @@ body.dark .topbar button:hover{background:#303136}
     const body = document.createElement('div');
     body.textContent = text;
     node.append(label, body);
+    const empty = $('#emptyState');
+    if (empty) empty.remove();
     messages.appendChild(node);
     messages.scrollTop = messages.scrollHeight;
     return body;
@@ -269,12 +268,16 @@ body.dark .topbar button:hover{background:#303136}
 
   const setBusy = value => {
     busy = value;
-    send.disabled = value;
+    send.disabled = false;
+    send.textContent = value ? 'Detener' : '↑';
+    send.setAttribute('aria-label', value ? 'Detener generación' : 'Enviar mensaje');
+    send.title = value ? 'Detener generación' : 'Enviar mensaje';
+    send.classList.toggle('stop-action', value);
     test.disabled = value;
-    stopBtn.disabled = !value;
   };
 
-  stopBtn.addEventListener('click', () => {
+  send.addEventListener('click', () => {
+    if (!busy) return;
     stopRequested = true;
     if (activeController) activeController.abort();
     setStatus('Deteniendo generación…');
@@ -297,7 +300,7 @@ body.dark .topbar button:hover{background:#303136}
     if (activeController) activeController.abort();
     history = [];
     messages.replaceChildren();
-    addMessage('assistant', 'Chat reiniciado. El modelo seguirá caliente en Ollama si keep_alive está activo.');
+    messages.innerHTML = '<div class="empty-state" id="emptyState"><div class="hero-logo"><img src="images/1.png" alt="Logo de MIND" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'fallback\')"><span class="fallback-letter">N</span></div><h2>Una gran inteligencia conlleva un gran alma.</h2><p>Bienvenido a MIND. ¿Qué vamos a crear hoy?</p></div>';
     setStatus('Historial borrado.');
   });
   const DEFAULT_ENDPOINT = 'http://192.168.1.128:11434';
