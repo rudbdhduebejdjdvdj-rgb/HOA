@@ -358,6 +358,11 @@ body.dark .topbar button:hover{background:#303136}
   });
   const DEFAULT_ENDPOINT = 'http://192.168.0.128:11434';
   let savedEndpoint = localStorage.getItem('ollamaEndpoint') || '';
+  // Migra automáticamente la IP LAN anterior que quedó guardada en algunos navegadores.
+  if (savedEndpoint === 'http://192.168.1.128:11434') {
+    savedEndpoint = DEFAULT_ENDPOINT;
+    localStorage.setItem('ollamaEndpoint', savedEndpoint);
+  }
   if (savedEndpoint) {
     try {
       const parsedSaved = new URL(savedEndpoint);
