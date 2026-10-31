@@ -35,6 +35,7 @@ textarea{flex:1;resize:none;min-height:48px;max-height:180px;border:0!important;
  .codebox{margin:12px 0 3px;border:1px solid #c8cbd1;border-radius:11px;overflow:hidden;background:#fff;color:#20242b;box-shadow:0 2px 7px #0000000a}
 .codehead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px;background:#f1f2f4;color:#343943;border-bottom:1px solid #d8dbe0;font-size:12px}
 .code-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto}
+.downloadbtn{border:1px solid #cbd0d8;background:#fff;color:#242833;border-radius:8px;padding:7px 10px;font:600 12px 'Courier New',monospace;cursor:pointer}.downloadbtn:hover{background:#f0f4fa}body.dark .downloadbtn{background:#292b30;color:#f4f4f5;border-color:#555861}
 .copybtn,.runbtn{padding:6px 10px;font-size:12px;background:#fff;color:#252932;border:1px solid #c8cbd1;border-radius:7px;white-space:nowrap}
 .copybtn:hover,.runbtn:hover{background:#f3f4f6;border-color:#9da3ad}
 .runbtn{font-weight:700}
@@ -239,6 +240,77 @@ body.dark .topbar button:hover{background:#303136}
         setTimeout(() => { copy.textContent = 'Copiar'; }, 1800);
       });
       actions.appendChild(copy);
+      const fileExtension = {javascript:'js',js:'js',typescript:'ts',ts:'ts',python:'py',py:'py',html:'html',htm:'html',css:'css',json:'json',xml:'xml',yaml:'yml',yml:'yml',markdown:'md',md:'md',bash:'sh',sh:'sh',shell:'sh',sql:'sql',swift:'swift',java:'java',kotlin:'kt',rust:'rs',go:'go',golang:'go',php:'php',ruby:'rb',c:'c',cpp:'cpp','c++':'cpp',csharp:'cs','c#':'cs',arduino:'ino',text:'txt',txt:'txt' };
+      const ext = fileExtension[normalizedLang] || 'txt';
+      const download = document.createElement('button');
+      download.type = 'button';
+      download.className = 'downloadbtn';
+      download.textContent = 'Descargar';
+      download.title = 'Descargar este bloque como archivo';
+      download.addEventListener('click', () => {
+        const blob = new Blob([value], {type: 'text/plain;charset=utf-8'});
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = 'mind-archivo-' + (Array.from(container.querySelectorAll('.codebox')).indexOf(box) + 1) + '.' + ext;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+      });
+      actions.appendChild(download);
+
+      const zip = document.createElement('button');
+      zip.type = 'button';
+      zip.className = 'downloadbtn';
+      zip.textContent = 'Descargar ZIP';
+      zip.title = 'Empaquetar los bloques de código de esta respuesta en un ZIP';
+      zip.addEventListener('click', async () => {
+        try {
+          if (!window.JSZip) {
+            setStatus('Preparando ZIP…');
+            await new Promise((resolve, reject) => {
+              const existing = document.querySelector('script[data-jszip]');
+              if (existing) {
+                existing.addEventListener('load', resolve, {once:true});
+                existing.addEventListener('error', reject, {once:true});
+                if (window.JSZip) resolve();
+                return;
+              }
+              const script = document.createElement('script');
+              script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+              script.dataset.jszip = 'true';
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
+            });
+          }
+          if (!window.JSZip) throw new Error('No se pudo cargar el generador ZIP. Comprueba la conexión a Internet.');
+          const archive = new window.JSZip();
+          const codeboxes = Array.from(container.querySelectorAll('.codebox'));
+          codeboxes.forEach((codebox, index) => {
+            const source = codebox.querySelector('code');
+            if (!source) return;
+            const language = (codebox.querySelector('.codehead span')?.textContent || '').trim().toLowerCase().split(/\\s+/)[0];
+            const extensions = {javascript:'js',js:'js',typescript:'ts',ts:'ts',python:'py',py:'py',html:'html',htm:'html',css:'css',json:'json',xml:'xml',yaml:'yml',yml:'yml',markdown:'md',md:'md',bash:'sh',sh:'sh',sql:'sql',swift:'swift',java:'java',kotlin:'kt',rust:'rs',go:'go',php:'php',ruby:'rb',c:'c',cpp:'cpp','c++':'cpp',csharp:'cs','c#':'cs',arduino:'ino'};
+            archive.file('archivo-' + (index + 1) + '.' + (extensions[language] || 'txt'), source.textContent);
+          });
+          const blob = await archive.generateAsync({type:'blob'});
+          const objectUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = objectUrl;
+          link.download = 'mind-archivos.zip';
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+          setStatus('ZIP descargado correctamente.', 'ok');
+        } catch (error) {
+          setStatus(error.message || 'No se pudo crear el ZIP.', 'error');
+        }
+      });
+      actions.appendChild(zip);
+
 
       const canRun = ['html','htm','js','javascript'].includes(normalizedLang);
       const runArea = document.createElement('div');
