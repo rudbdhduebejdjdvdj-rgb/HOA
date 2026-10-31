@@ -19,9 +19,9 @@ input{flex:1}#status{position:absolute;width:1px;height:1px;padding:0;margin:-1p
 .msg{max-width:88%;padding:14px 17px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;contain:content;color:#202020}
 .user{align-self:flex-end;background:#eeece7}.assistant{align-self:flex-start;background:#fff;border:1px solid #e7e5df}
 .label{display:block;font-size:11px;color:#85857f;margin-bottom:6px;font-weight:650;letter-spacing:.04em}
-form{padding:12px max(20px,calc((100% - 900px)/2)) 22px;display:flex;align-items:center;background:#f8f7f4}body.dark form{background:#111214}.composer-shell{width:100%;display:flex;align-items:flex-end;gap:10px;padding:9px 10px 9px 19px;border:1px solid #dfded9;border-radius:25px;background:#fff;box-shadow:0 2px 10px #00000008;transition:border-color .2s,box-shadow .2s}.composer-shell:focus-within{border-color:#b8b6ae;box-shadow:0 3px 16px #0000000c}
+form{padding:12px max(20px,calc((100% - 900px)/2)) 22px;display:flex;align-items:center;background:#f8f7f4}body.dark form{background:#111214}.composer-shell{width:100%;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 18px;border:1px solid #dfded9;border-radius:23px;background:#fff;box-shadow:0 2px 10px #00000008;transition:border-color .2s,box-shadow .2s}.composer-shell:focus-within{border-color:#b8b6ae;box-shadow:0 3px 16px #0000000c}.composer-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto}.composer-actions button{display:grid;place-items:center;width:36px;height:36px;min-width:36px;padding:0;border-radius:50%;font-size:15px;line-height:1}.composer-actions .stop-action{background:#e9e8e4;color:#555;border:1px solid #deddd8}.composer-actions .send-action{background:#202020;color:#fff}.composer-actions button:disabled{opacity:.34;cursor:default}body.dark .composer-actions .stop-action{background:#34353a;color:#eee;border-color:#45464d}body.dark .composer-actions .send-action{background:#f0f0ef;color:#171717}
 textarea{flex:1;resize:none;min-height:48px;max-height:180px;border:0!important;outline:0;box-shadow:none!important;background:transparent!important;border-radius:0!important;padding:12px 0!important;color:inherit!important}textarea::placeholder{color:#999890}
-.hint{display:none}.send-action{flex:0 0 auto;min-width:42px;height:42px;padding:0 14px;border-radius:50px;display:grid;place-items:center;background:#202020;color:#fff;font-size:13px;font-weight:650}.send-action.stop-action{border-radius:50px;background:#777;color:#fff}body.dark .composer-shell{background:#202125;border-color:#3a3b41}body.dark .composer-shell:focus-within{border-color:#62636b}body.dark .send-action{background:#f1f1f1;color:#181818}body.dark .send-action.stop-action{background:#666;color:#fff}
+.hint{display:none}body.dark .composer-shell{background:#202125;border-color:#3a3b41}body.dark .composer-shell:focus-within{border-color:#62636b}
  .codebox{margin:10px 0 2px;border:1px solid #303039;border-radius:10px;overflow:hidden;background:#111218;color:#f4f4f5}
 .codehead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;background:#24252c;color:#c4c4cc;font-size:12px}
 .copybtn{padding:6px 10px;font-size:12px;background:#e4e4e7;color:#18181b}
@@ -69,7 +69,7 @@ body.dark .topbar button:hover{background:#303136}
 <div class="topbar"><button id="toggleSidebar" type="button" aria-label="Abrir o cerrar menú" title="Menú">☰</button><select id="modelSelect" class="model-select" aria-label="Seleccionar modelo"><option value="qwen2.5-coder:1.5b">Qwen 2.5 Coder 1.5B</option><option value="llama3.2">Llama 3.2</option><option value="mistral">Mistral</option><option value="deepseek-coder">DeepSeek Coder</option></select><button id="modelSettings" class="model-settings" type="button" aria-label="Ajustes del modelo" title="Ajustes del modelo">⚙</button><span class="spacer"></span><button id="themeToggle" type="button" aria-label="Cambiar tema" title="Cambiar entre modo claro y oscuro">☾</button></div>
 <div id="status" aria-live="polite"></div>
 <section id="messages" aria-live="polite"><div class="empty-state" id="emptyState"><div class="hero-logo"><img src="images/1.png" alt="Logo de MIND" onerror="this.style.display='none';this.parentElement.classList.add('fallback')"><span class="fallback-letter">N</span></div><h2>Una gran inteligencia conlleva un gran alma.</h2><p>Bienvenido a MIND. ¿Qué vamos a crear hoy?</p></div></section>
-<form id="chatForm"><div class="composer-shell"><textarea id="prompt" rows="1" placeholder="Pregunta a MIND" required></textarea><button id="sendBtn" class="send-action" type="button" aria-label="Enviar mensaje" title="Enviar">↑</button></div></form>
+<form id="chatForm"><div class="composer-shell"><textarea id="prompt" rows="1" placeholder="Pregunta a MIND" required></textarea><div class="composer-actions"><button id="stopBtn" class="stop-action" type="button" aria-label="Detener generación" title="Detener" disabled>■</button><button id="sendBtn" class="send-action" type="submit" aria-label="Enviar mensaje" title="Enviar">↑</button></div></div></form>
 </section>
 <div id="settingsPanel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="settings-card"><h2 id="settingsTitle">Ajustes de conexión</h2><p>Configura el servidor de Ollama y comprueba la conexión del modelo seleccionado.</p><label for="endpoint">URL del servidor Ollama</label><input id="endpoint" aria-label="URL del servidor" value="http://192.168.1.128:11434" placeholder="http://IP:PUERTO"><div id="settingsStatus" style="font-size:12px;margin-top:8px;color:#888">La conexión se configura aquí.</div><div class="settings-actions"><button id="closeSettings" type="button" style="background:#777">Cerrar</button><button id="saveBtn" type="button">Guardar URL</button><button id="testBtn" type="button">Probar</button></div></div></div>
 </main>
@@ -78,7 +78,7 @@ body.dark .topbar button:hover{background:#303136}
   'use strict';
   const $ = s => document.querySelector(s);
   const endpoint = $('#endpoint'), status = $('#status'), messages = $('#messages');
-  const input = $('#prompt'), send = $('#sendBtn'), test = $('#testBtn');
+  const input = $('#prompt'), send = $('#sendBtn'), stopBtn = $('#stopBtn'), test = $('#testBtn');
   const settingsPanel = $('#settingsPanel');
   const settingsStatus = $('#settingsStatus');
   $('#toggleSidebar').addEventListener('click', () => { const side = document.querySelector('.sidebar'); side.style.display = side.style.display === 'none' ? 'flex' : 'none'; });
@@ -268,29 +268,17 @@ body.dark .topbar button:hover{background:#303136}
 
   const setBusy = value => {
     busy = value;
-    send.disabled = false;
-    send.textContent = value ? 'Detener' : '↑';
-    send.setAttribute('aria-label', value ? 'Detener generación' : 'Enviar mensaje');
-    send.title = value ? 'Detener generación' : 'Enviar mensaje';
-    send.classList.toggle('stop-action', value);
+    send.disabled = value;
+    stopBtn.disabled = !value;
     test.disabled = value;
   };
 
-  send.addEventListener('click', () => {
-    if (busy) {
-      stopRequested = true;
-      if (activeController) activeController.abort();
-      setStatus('Deteniendo generación…');
-      return;
-    }
-    // El botón es type="button": iniciamos el envío de forma explícita para que
-    // el mismo control pueda alternar sin depender del submit nativo del botón.
-    const form = $('#chatForm');
-    if (typeof form.requestSubmit === 'function') {
-      form.requestSubmit();
-    } else {
-      form.dispatchEvent(new Event('submit', {bubbles:true, cancelable:true}));
-    }
+  stopBtn.addEventListener('click', () => {
+    if (!busy) return;
+    stopRequested = true;
+    stopBtn.disabled = true;
+    if (activeController) activeController.abort();
+    setStatus('Deteniendo generación…');
   });
   const saveUrl = () => {
     const url = base();
@@ -465,9 +453,9 @@ body.dark .topbar button:hover{background:#303136}
     }
   });
   input.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
       e.preventDefault();
-      $('#chatForm').requestSubmit();
+      if (!busy) $('#chatForm').requestSubmit(send);
     }
   });
   input.addEventListener('input', () => {
